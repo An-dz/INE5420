@@ -6,7 +6,7 @@ class GeometricObject:
     i = 0
     """Singleton for hashing / static property"""
 
-    def __init__(self, name: str, obj_type: str, coordinates: list[Coordinate]) -> None:
+    def __init__(self, name: str, obj_type: str, coordinates: tuple[Coordinate, ...]) -> None:
         self._name = name
         self._type = obj_type
         self._coordinates = coordinates
@@ -22,5 +22,5 @@ class GeometricObject:
     def getName(self) -> str:
         return self._name
 
-    def getCoordinates(self) -> list[Coordinate]:
+    def getCoordinates(self) -> tuple[Coordinate, ...]:
         return self._coordinates
