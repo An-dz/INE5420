@@ -204,4 +204,5 @@ class Ui_MainWindow(object):
         self.menuAbout.setTitle(_translate("MainWindow", "Help"))
         self.actionAdd_Object.setText(_translate("MainWindow", "Add Object..."))
         self.actionQuit.setText(_translate("MainWindow", "Quit"))
+        self.actionQuit.setShortcut(_translate("MainWindow", "Ctrl+Q"))
         self.actionAbout.setText(_translate("MainWindow", "About"))
