@@ -16,12 +16,6 @@ class Window:
         self.display_file.add(Point("test", (0,150)))
         self.display_file.add(Wireframe("square", ((20,100), (40,100), (40,80), (20,80), (20,100))))
 
-    def zoom(self):
-        pass
-
-    def translate(self):
-        pass
-
     def getVisibleObjects(self):
         return self.display_file.objects()
 
@@ -38,3 +32,9 @@ class Window:
         self._x_coordinates[1] += dx
         self._y_coordinates[0] += dy
         self._y_coordinates[1] += dy
+
+    def zoom(self, times: float) -> None:
+        self._x_coordinates[0] *= times
+        self._x_coordinates[1] *= times
+        self._y_coordinates[0] *= times
+        self._y_coordinates[1] *= times

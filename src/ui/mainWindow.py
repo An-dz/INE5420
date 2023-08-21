@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QKeyEvent
+from PyQt6.QtGui import QKeyEvent, QKeySequence, QShortcut
 from ui.generated.mainWindow import Ui_MainWindow
 from ui.about import AboutDialog
 from viewport import Viewport
@@ -17,8 +17,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.movementButtonLeft.clicked.connect(self.actionMoveLeft)
         self.movementButtonRight.clicked.connect(self.actionMoveRight)
         self.movementButtonUp.clicked.connect(self.actionMoveUp)
-        self.movementButtonZoomOut.clicked.connect(self.actionMoveLeft)
-        self.movementButtonZoomIn.clicked.connect(self.actionMoveLeft)
+        self.movementButtonZoomOut.clicked.connect(self.actionZoomOut)
+        self.movementButtonZoomIn.clicked.connect(self.actionZoomIn)
+        self.keyboardZoomIn = QShortcut(QKeySequence("+"), self)
+        self.keyboardZoomOut = QShortcut(QKeySequence("-"), self)
+        self.keyboardZoomIn.activated.connect(self.actionZoomIn)
+        self.keyboardZoomOut.activated.connect(self.actionZoomOut)
 
         self._window_obj = Window((-100,-100), (100,100))
         self._viewport = Viewport(self._window_obj, (self.graphicsView.height() - 2, self.graphicsView.width() - 2))
@@ -30,7 +34,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if event:
             numpad_mod = event.modifiers() & Qt.KeyboardModifier.KeypadModifier
             if numpad_mod:
-                if event.key() == Qt.Key.Key_2:
+                if event.key() == Qt.Key.Key_Plus:
+                    self.actionZoomIn()
+                elif event.key() == Qt.Key.Key_Minus:
+                    self.actionZoomOut()
+                elif event.key() == Qt.Key.Key_2:
                     self.actionMoveDown()
                 elif event.key() == Qt.Key.Key_4:
                     self.actionMoveLeft()
@@ -53,6 +61,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def actionMoveDown(self) -> None:
         self._window_obj.move(0, -20)
+        self._viewport.draw()
+
+    def actionZoomOut(self) -> None:
+        self._window_obj.zoom(2)
+        self._viewport.draw()
+
+    def actionZoomIn(self) -> None:
+        self._window_obj.zoom(0.5)
         self._viewport.draw()
 
     def actionAboutMenu(self) -> None:
