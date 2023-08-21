@@ -11,7 +11,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionAbout.triggered.connect(self.actionAboutMenu)
         self.actionQuit.triggered.connect(self.actionQuitMenu)
 
-        self._window_obj = Window((0,0), (1,1))
+        self._window_obj = Window((0,0), (200,200))
         self._viewport = Viewport(self._window_obj, (self.graphicsView.height() - 2, self.graphicsView.width() - 2))
         self.graphicsView.setScene(self._viewport.getScene())
         self.graphicsView.setSceneRect(0,0,self.graphicsView.height() - 2,self.graphicsView.width() - 2)
