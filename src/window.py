@@ -28,10 +28,12 @@ class Window:
         return 1 - ((yw - yw_min) / (yw_max - yw_min))
 
     def move(self, dx: float, dy: float) -> None:
-        self._x_coordinates[0] += dx
-        self._x_coordinates[1] += dx
-        self._y_coordinates[0] += dy
-        self._y_coordinates[1] += dy
+        amount_x = (self._x_coordinates[1] - self._x_coordinates[0]) * dx
+        amount_y = (self._y_coordinates[1] - self._y_coordinates[0]) * dy
+        self._x_coordinates[0] += amount_x
+        self._x_coordinates[1] += amount_x
+        self._y_coordinates[0] += amount_y
+        self._y_coordinates[1] += amount_y
 
     def zoom(self, times: float) -> None:
         self._x_coordinates[0] *= times
