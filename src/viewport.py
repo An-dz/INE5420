@@ -17,7 +17,7 @@ class Viewport:
     def getScene(self) -> QtWidgets.QGraphicsScene:
         return self._graphic_scene
 
-    def draw(self):
+    def draw(self) -> None:
         self._graphic_scene.clear()
         objects = self._window.getVisibleObjects()
         for obj in objects:
