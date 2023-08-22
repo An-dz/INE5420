@@ -39,6 +39,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self._viewport.draw()
 
     def keyPressEvent(self, event: QKeyEvent | None) -> None:
+        """
+        Listens to keyboard shortcuts so we can have keypad shortcuts just like in Blender
+        """
         if event:
             numpad_mod = event.modifiers() & Qt.KeyboardModifier.KeypadModifier
             if numpad_mod:
@@ -56,6 +59,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     self.actionMoveUp()
 
     def actionDeleteObject(self) -> None:
+        """
+        Deletes an object from the world through the UI list
+
+        @note The deleted object is the currently selected object
+        """
         obj_index = self.objectsList.currentRow()
         if obj_index > -1 and obj_index < self.objectsList.count():
             self.objectsList.takeItem(obj_index)
@@ -87,17 +95,33 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self._viewport.draw()
 
     def actionCreateObject(self, obj: GeometricObject) -> None:
+        """
+        Adds a created object into the display file and the object list UI
+
+        @note Used as a callback in the Create Object dialog
+
+        @param obj: The created object
+        """
         self._display_file.add(obj)
         QtWidgets.QListWidgetItem("{} [{}]".format(obj.getName(), obj.getType()), self.objectsList)
         self._viewport.draw()
 
     def actionCreateObjectMenu(self) -> None:
+        """
+        Opens the Create Object dialog
+        """
         dialog = CreateObjectDialog(callback=self.actionCreateObject)
         dialog.exec()
 
     def actionAboutMenu(self) -> None:
+        """
+        Opens the About dialog
+        """
         dialog = AboutDialog()
         dialog.exec()
 
     def actionQuitMenu(self) -> None:
+        """
+        Quits the application
+        """
         self.close()

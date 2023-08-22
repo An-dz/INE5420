@@ -7,10 +7,25 @@ class DisplayFile:
         self._objects: list[GeometricObject] = []
 
     def add(self, object: GeometricObject) -> None:
+        """
+        Adds a geometric object into the display file
+
+        @param object: The geometric object to include into the world
+        """
         self._objects.append(object)
 
     def remove(self, index: int) -> None:
+        """
+        Removes a geometric object from the display file
+
+        @param index: Index of the object, this should be equal to the list in the UI
+        """
         self._objects.pop(index)
 
     def objects(self) -> list[GeometricObject]:
+        """
+        Returns the display file list so it can be iterated
+
+        @returns: All objects in the display file
+        """
         return self._objects

@@ -4,6 +4,14 @@ from objects.geometricObject import Coordinate, GeometricObject
 class Wireframe(GeometricObject):
     """A Wireframe consists of multiple points in space"""
     def __init__(self, name: str, points: tuple[Coordinate, ...]) -> None:
+        """
+        Creates a Wireframe object
+
+        @warn should not be called directly, use the object Factory instead
+
+        @param name: A name to show in the object list
+        @param points: A tuple of Coordinate tuples
+        """
         if len(points) < 3:
             raise ValueError("Wireframe requires more than 2 points")
 
