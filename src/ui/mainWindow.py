@@ -1,4 +1,4 @@
-from PyQt6 import QtWidgets, QtGui
+from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QKeyEvent, QKeySequence, QShortcut
 from displayFile import DisplayFile
@@ -32,10 +32,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self._display_file = DisplayFile()
         self._window_obj = Window(self._display_file, (-100,-100), (100,100))
-        self._viewport = Viewport(self._window_obj, (self.graphicsView.height() - 2, self.graphicsView.width() - 2))
-        self.graphicsView.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(61, 61, 61)))
-        self.graphicsView.setScene(self._viewport.getScene())
-        self.graphicsView.setSceneRect(0,0,self.graphicsView.height() - 2,self.graphicsView.width() - 2)
+        self._viewport = Viewport(self._window_obj, self.viewportCanvas)
+
+        # viewportCanvas.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(61, 61, 61)))
         self._viewport.draw()
 
     def keyPressEvent(self, event: QKeyEvent | None) -> None:
