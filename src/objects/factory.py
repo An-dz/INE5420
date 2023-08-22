@@ -7,7 +7,7 @@ from objects.wireframe import Wireframe
 class Factory:
     """Simple factory for generating the correct type of object based on input"""
     @staticmethod
-    def createObject(name: str, points: tuple[Coordinate, ...]) -> GeometricObject:
+    def create_object(name: str, points: tuple[Coordinate, ...]) -> GeometricObject:
         """
         Creates an appropriate geometric object according to the amount of points given
 

@@ -1,9 +1,15 @@
 Coordinate = tuple[float, float]
 """Coordinate in 2D plane"""
 
+
 class GeometricObject:
     """Geometric Object is the base class for all objects that can be drawn"""
-    def __init__(self, name: str, obj_type: str, coordinates: tuple[Coordinate, ...]) -> None:
+    def __init__(
+        self,
+        name: str,
+        obj_type: str,
+        coordinates: tuple[Coordinate, ...],
+    ) -> None:
         """
         Creates a Geometric Object
 
@@ -17,7 +23,7 @@ class GeometricObject:
         self._type = obj_type
         self._coordinates = coordinates
 
-    def getType(self) -> str:
+    def get_type(self) -> str:
         """
         Returns the type of the object
 
@@ -27,7 +33,7 @@ class GeometricObject:
         """
         return self._type
 
-    def getName(self) -> str:
+    def get_name(self) -> str:
         """
         Returns the name given to the object
 
@@ -35,7 +41,7 @@ class GeometricObject:
         """
         return self._name
 
-    def getCoordinates(self) -> tuple[Coordinate, ...]:
+    def get_coordinates(self) -> tuple[Coordinate, ...]:
         """
         Returns the coordinates of each point of the object
 

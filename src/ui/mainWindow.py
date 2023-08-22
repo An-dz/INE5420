@@ -9,35 +9,35 @@ from ui.about import AboutDialog
 from viewport import Viewport
 from window import Window
 
+
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, *args, **kwargs) -> None:
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
         # set actions
-        self.actionAdd_Object.triggered.connect(self.actionCreateObjectMenu)
-        self.actionAbout.triggered.connect(self.actionAboutMenu)
-        self.actionQuit.triggered.connect(self.actionQuitMenu)
-        self.movementButtonDown.clicked.connect(self.actionMoveDown)
-        self.movementButtonLeft.clicked.connect(self.actionMoveLeft)
-        self.movementButtonRight.clicked.connect(self.actionMoveRight)
-        self.movementButtonUp.clicked.connect(self.actionMoveUp)
-        self.movementButtonZoomOut.clicked.connect(self.actionZoomOut)
-        self.movementButtonZoomIn.clicked.connect(self.actionZoomIn)
+        self.actionAdd_Object.triggered.connect(self.action_create_objectmenu)
+        self.actionAbout.triggered.connect(self.action_about_menu)
+        self.actionQuit.triggered.connect(self.action_quit_menu)
+        self.movementButtonDown.clicked.connect(self.action_move_down)
+        self.movementButtonLeft.clicked.connect(self.action_move_left)
+        self.movementButtonRight.clicked.connect(self.action_move_right)
+        self.movementButtonUp.clicked.connect(self.action_move_up)
+        self.movementButtonZoomOut.clicked.connect(self.action_zoom_out)
+        self.movementButtonZoomIn.clicked.connect(self.action_zoom_in)
         self.keyboardZoomIn = QShortcut(QKeySequence("+"), self)
         self.keyboardZoomOut = QShortcut(QKeySequence("-"), self)
-        self.keyboardZoomIn.activated.connect(self.actionZoomIn)
-        self.keyboardZoomOut.activated.connect(self.actionZoomOut)
+        self.keyboardZoomIn.activated.connect(self.action_zoom_in)
+        self.keyboardZoomOut.activated.connect(self.action_zoom_out)
         self.keyboardDeleteObject = QShortcut(QKeySequence("Del"), self)
-        self.keyboardDeleteObject.activated.connect(self.actionDeleteObject)
+        self.keyboardDeleteObject.activated.connect(self.action_delete_object)
 
         self._display_file = DisplayFile()
-        self._window_obj = Window(self._display_file, (-100,-100), (100,100))
+        self._window_obj = Window(self._display_file, (-100, -100), (100, 100))
         self._viewport = Viewport(self._window_obj, self.viewportCanvas)
 
-        # viewportCanvas.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(61, 61, 61)))
         self._viewport.draw()
 
-    def keyPressEvent(self, event: QKeyEvent | None) -> None:
+    def keyPressEvent(self, event: QKeyEvent | None) -> None:  # noqa: N802
         """
         Listens to keyboard shortcuts so we can have keypad shortcuts just like in Blender
         """
@@ -45,19 +45,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             numpad_mod = event.modifiers() & Qt.KeyboardModifier.KeypadModifier
             if numpad_mod:
                 if event.key() == Qt.Key.Key_Plus:
-                    self.actionZoomIn()
+                    self.action_zoom_in()
                 elif event.key() == Qt.Key.Key_Minus:
-                    self.actionZoomOut()
+                    self.action_zoom_out()
                 elif event.key() == Qt.Key.Key_2:
-                    self.actionMoveDown()
+                    self.action_move_down()
                 elif event.key() == Qt.Key.Key_4:
-                    self.actionMoveLeft()
+                    self.action_move_left()
                 elif event.key() == Qt.Key.Key_6:
-                    self.actionMoveRight()
+                    self.action_move_right()
                 elif event.key() == Qt.Key.Key_8:
-                    self.actionMoveUp()
+                    self.action_move_up()
 
-    def actionDeleteObject(self) -> None:
+    def action_delete_object(self) -> None:
         """
         Deletes an object from the world through the UI list
 
@@ -69,31 +69,31 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self._display_file.remove(obj_index)
             self._viewport.draw()
 
-    def actionMoveLeft(self) -> None:
+    def action_move_left(self) -> None:
         self._window_obj.move(-0.03, 0)
         self._viewport.draw()
 
-    def actionMoveRight(self) -> None:
+    def action_move_right(self) -> None:
         self._window_obj.move(0.03, 0)
         self._viewport.draw()
 
-    def actionMoveUp(self) -> None:
+    def action_move_up(self) -> None:
         self._window_obj.move(0, 0.03)
         self._viewport.draw()
 
-    def actionMoveDown(self) -> None:
+    def action_move_down(self) -> None:
         self._window_obj.move(0, -0.03)
         self._viewport.draw()
 
-    def actionZoomOut(self) -> None:
+    def action_zoom_out(self) -> None:
         self._window_obj.zoom(1.25)
         self._viewport.draw()
 
-    def actionZoomIn(self) -> None:
+    def action_zoom_in(self) -> None:
         self._window_obj.zoom(0.8)
         self._viewport.draw()
 
-    def actionCreateObject(self, obj: GeometricObject) -> None:
+    def action_create_object(self, obj: GeometricObject) -> None:
         """
         Adds a created object into the display file and the object list UI
 
@@ -102,24 +102,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         @param obj: The created object
         """
         self._display_file.add(obj)
-        QtWidgets.QListWidgetItem("{} [{}]".format(obj.getName(), obj.getType()), self.objectsList)
+        QtWidgets.QListWidgetItem(
+            "{} [{}]".format(obj.get_name(), obj.get_type()),
+            self.objectsList,
+        )
         self._viewport.draw()
 
-    def actionCreateObjectMenu(self) -> None:
+    def action_create_objectmenu(self) -> None:
         """
         Opens the Create Object dialog
         """
-        dialog = CreateObjectDialog(callback=self.actionCreateObject)
+        dialog = CreateObjectDialog(callback=self.action_create_object)
         dialog.exec()
 
-    def actionAboutMenu(self) -> None:
+    def action_about_menu(self) -> None:
         """
         Opens the About dialog
         """
         dialog = AboutDialog()
         dialog.exec()
 
-    def actionQuitMenu(self) -> None:
+    def action_quit_menu(self) -> None:
         """
         Quits the application
         """
