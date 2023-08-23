@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets, QtCore
 from PyQt6.QtCore import QPointF, Qt
-from PyQt6.QtGui import QKeyEvent, QKeySequence, QMouseEvent, QShortcut, QWheelEvent
+from PyQt6.QtGui import QIcon, QKeyEvent, QKeySequence, QMouseEvent, QShortcut, QWheelEvent
 from displayFile import DisplayFile
 from objects.geometricObject import GeometricObject
 from ui.createObject import CreateObjectDialog
@@ -32,6 +32,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.keyboardDeleteObject.activated.connect(self.action_delete_object)
         self.actionAdd_Object.setShortcut("Shift+A")
 
+        self._icons = {
+            "Point": QIcon("../assets/point.png"),
+            "Line": QIcon("../assets/line.png"),
+            "Wireframe": QIcon("../assets/wireframe.png"),
+        }
+
         self._display_file = DisplayFile()
         self._window_obj = Window(self._display_file, (-100, -100), (100, 100))
         self._viewport = Viewport(self._window_obj, self.viewportCanvas)
@@ -47,7 +53,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def mouse_move_event(self, ev: QMouseEvent | None) -> None:
         if ev and self._mouse_coordinate is not None:
             delta = self._mouse_coordinate - ev.position()
-            print("Move {}".format(delta))
             self._window_obj.pan(
                 delta.x() / (self.viewportCanvas.width() - 2),
                 delta.y() / (self.viewportCanvas.height() - 2),
@@ -58,7 +63,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     @QtCore.pyqtSlot(QtCore.QPoint)
     def mouse_release_event(self, ev: QMouseEvent | None) -> None:
         if ev and ev.button() == Qt.MouseButton.MiddleButton:
-            print("Release {}".format(self._mouse_coordinate))
             self._mouse_coordinate = None
 
     @QtCore.pyqtSlot(QtCore.QPoint)
@@ -69,12 +73,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             and ev.modifiers() & Qt.KeyboardModifier.ShiftModifier
         ):
             self._mouse_coordinate = ev.position()
-            print("Press {}".format(self._mouse_coordinate))
-        # delta = QtCore.QPoint(30, -15)
-        # self.label_position.show()
-        # self.label_position.move(pos + delta)
-        # self.label_position.setText("(%d, %d)" % (pos.x(), pos.y()))
-        # self.label_position.adjustSize()
 
     def mouse_scroll_event(self, a0: QWheelEvent | None) -> None:
         """
@@ -156,6 +154,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         self._display_file.add(obj)
         QtWidgets.QListWidgetItem(
+            self._icons[obj.get_type()],
             "{} [{}]".format(obj.get_name(), obj.get_type()),
             self.objectsList,
         )
