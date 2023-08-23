@@ -69,6 +69,22 @@ class Window:
         self._y_coordinates[0] += amount_y
         self._y_coordinates[1] += amount_y
 
+    def pan(self, dx: float, dy: float) -> None:
+        """
+        Moves the window around
+
+        @note This uses a percentage style so movement is consistent no matter the zoom
+
+        @param times_dx: Percentage of the axis length to move
+        @param times_dy: Percentage of the axis length to move
+        """
+        width = self._x_coordinates[1] - self._x_coordinates[0]
+        height = self._y_coordinates[1] - self._y_coordinates[0]
+        self._x_coordinates[0] += (dx * width)
+        self._x_coordinates[1] += (dx * width)
+        self._y_coordinates[0] += (-dy * height)
+        self._y_coordinates[1] += (-dy * height)
+
     def zoom(self, times: float) -> None:
         """
         Scales the window size
