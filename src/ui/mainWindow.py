@@ -30,6 +30,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.keyboardZoomOut.activated.connect(self.action_zoom_out)
         self.keyboardDeleteObject = QShortcut(QKeySequence("Del"), self)
         self.keyboardDeleteObject.activated.connect(self.action_delete_object)
+        self.actionAdd_Object.setShortcut("Shift+A")
 
         self._display_file = DisplayFile()
         self._window_obj = Window(self._display_file, (-100, -100), (100, 100))
