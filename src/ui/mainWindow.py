@@ -11,7 +11,7 @@ from window import Window
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, icons: dict[str, QIcon], *args, **kwargs) -> None:
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
         # set actions
@@ -32,11 +32,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.keyboardDeleteObject.activated.connect(self.action_delete_object)
         self.actionAdd_Object.setShortcut("Shift+A")
 
-        self._icons = {
-            "Point": QIcon("../assets/point.png"),
-            "Line": QIcon("../assets/line.png"),
-            "Wireframe": QIcon("../assets/wireframe.png"),
-        }
+        self._icons = icons
 
         self._display_file = DisplayFile()
         self._window_obj = Window(self._display_file, (-100, -100), (100, 100))
