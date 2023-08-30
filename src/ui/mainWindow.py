@@ -1,17 +1,18 @@
-from PyQt6 import QtWidgets, QtCore
-from PyQt6.QtCore import QPointF, Qt
-from PyQt6.QtGui import QIcon, QKeyEvent, QKeySequence, QMouseEvent, QShortcut, QWheelEvent
+from PyQt6 import QtWidgets, QtCore, QtGui
+from PyQt6.QtCore import Qt
 from displayFile import DisplayFile
 from objects.geometricObject import GeometricObject
 from ui.createObject import CreateObjectDialog
 from ui.generated.mainWindow import Ui_MainWindow
 from ui.about import AboutDialog
+from ui.transform import TransformDialog
 from viewport import Viewport
 from window import Window
+from objects.line import Line
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
-    def __init__(self, icons: dict[str, QIcon], *args, **kwargs) -> None:
+    def __init__(self, icons: dict[str, QtGui.QIcon], *args, **kwargs) -> None:
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
         # set actions
@@ -24,29 +25,56 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.movementButtonUp.clicked.connect(self.action_move_up)
         self.movementButtonZoomOut.clicked.connect(self.action_zoom_out)
         self.movementButtonZoomIn.clicked.connect(self.action_zoom_in)
-        self.keyboardZoomIn = QShortcut(QKeySequence("+"), self)
-        self.keyboardZoomOut = QShortcut(QKeySequence("-"), self)
+        self.keyboardZoomIn = QtGui.QShortcut(QtGui.QKeySequence("+"), self)
+        self.keyboardZoomOut = QtGui.QShortcut(QtGui.QKeySequence("-"), self)
         self.keyboardZoomIn.activated.connect(self.action_zoom_in)
         self.keyboardZoomOut.activated.connect(self.action_zoom_out)
-        self.keyboardDeleteObject = QShortcut(QKeySequence("Del"), self)
+        self.keyboardDeleteObject = QtGui.QShortcut(QtGui.QKeySequence("Del"), self)
         self.keyboardDeleteObject.activated.connect(self.action_delete_object)
         self.actionAdd_Object.setShortcut("Shift+A")
+        self.actionTranslate.triggered.connect(
+            self.action_window_transform_object_translate,
+        )
+        self.actionScale.triggered.connect(self.action_window_transform_object_scale)
+        self.actionRotate.triggered.connect(self.action_window_transform_object_rotate)
+        self.actionTranslate.setShortcuts(("G", "N"))
+        self.actionScale.setShortcut("S")
+        self.actionRotate.setShortcut("R")
 
         self._icons = icons
+
+        self.objectsList.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.objectsList.customContextMenuRequested.connect(self.context_menu_event)
 
         self._display_file = DisplayFile()
         self._window_obj = Window(self._display_file, (-100, -100), (100, 100))
         self._viewport = Viewport(self._window_obj, self.viewportCanvas)
-        self._mouse_coordinate: QPointF | None = None
+        self._mouse_coordinate: QtCore.QPointF | None = None
         self.viewportCanvas.wheelEvent = self.mouse_scroll_event
         self.viewportCanvas.mouseMoveEvent = self.mouse_move_event
         self.viewportCanvas.mousePressEvent = self.mouse_press_event
         self.viewportCanvas.mouseReleaseEvent = self.mouse_release_event
 
         self._viewport.draw()
+        # REMOVE: For testing purpose
+        self.action_create_object(Line("test", (246, 158, 67), (-33, -33), (66, 66)))
+
+    def context_menu_event(self, click_position: QtCore.QPoint) -> None:
+        print(click_position)
+        menu = QtWidgets.QMenu()
+        menu.addAction(self.actionAdd_Object)
+        item = self.objectsList.itemAt(click_position)
+        if item:
+            action_transform = menu.addAction("Transform")
+            if action_transform:
+                action_transform.triggered.connect(self.action_window_transform_object_translate)
+            action_delete = menu.addAction("Delete")
+            if action_delete:
+                action_delete.triggered.connect(self.action_delete_object)
+        action = menu.exec(self.objectsList.mapToGlobal(click_position))
 
     @QtCore.pyqtSlot(QtCore.QPoint)
-    def mouse_move_event(self, ev: QMouseEvent | None) -> None:
+    def mouse_move_event(self, ev: QtGui.QMouseEvent | None) -> None:
         if ev and self._mouse_coordinate is not None:
             delta = self._mouse_coordinate - ev.position()
             self._window_obj.pan(
@@ -57,12 +85,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self._mouse_coordinate = ev.position()
 
     @QtCore.pyqtSlot(QtCore.QPoint)
-    def mouse_release_event(self, ev: QMouseEvent | None) -> None:
+    def mouse_release_event(self, ev: QtGui.QMouseEvent | None) -> None:
         if ev and ev.button() == Qt.MouseButton.MiddleButton:
             self._mouse_coordinate = None
 
     @QtCore.pyqtSlot(QtCore.QPoint)
-    def mouse_press_event(self, ev: QMouseEvent | None) -> None:
+    def mouse_press_event(self, ev: QtGui.QMouseEvent | None) -> None:
         if (
             ev
             and ev.button() == Qt.MouseButton.MiddleButton
@@ -70,7 +98,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         ):
             self._mouse_coordinate = ev.position()
 
-    def mouse_scroll_event(self, a0: QWheelEvent | None) -> None:
+    def mouse_scroll_event(self, a0: QtGui.QWheelEvent | None) -> None:
         """
         Listen to mouse scrolling events to allow zoooming with the mouse
 
@@ -84,7 +112,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             else:
                 a0.ignore()
 
-    def keyPressEvent(self, event: QKeyEvent | None) -> None:  # noqa: N802
+    def keyPressEvent(self, event: QtGui.QKeyEvent | None) -> None:  # noqa: N802
         """
         Listens to keyboard shortcuts so we can have keypad shortcuts just like in Blender
         """
@@ -155,6 +183,26 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.objectsList,
         )
         self._viewport.draw()
+
+    def action_window_transform_object_translate(self) -> None:
+        self.action_window_transform_object_tab(TransformDialog.Tab.Translate)
+
+    def action_window_transform_object_scale(self) -> None:
+        self.action_window_transform_object_tab(TransformDialog.Tab.Scale)
+
+    def action_window_transform_object_rotate(self) -> None:
+        self.action_window_transform_object_tab(TransformDialog.Tab.Rotate)
+
+    def action_window_transform_object_tab(self, tab: TransformDialog.Tab) -> None:
+        """
+        Opens the Transform Object dialog
+        """
+        obj_index = self.objectsList.currentRow()
+        if obj_index > -1 and obj_index < self.objectsList.count():
+            obj = self._display_file.at(obj_index)
+            dialog = TransformDialog(geometric_obj=obj, tab=tab)
+            dialog.exec()
+            self._viewport.draw()
 
     def action_create_objectmenu(self) -> None:
         """
