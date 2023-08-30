@@ -1,6 +1,7 @@
 # Requirements
 - Python 3.9 or greater
 - PyQT 6
+- numpy
 
 ## Poetry
 This project uses poetry as a package manager, installing only production
