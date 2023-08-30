@@ -8,6 +8,7 @@ class GeometricObject:
         self,
         name: str,
         obj_type: str,
+        colour: tuple[int, int, int],
         coordinates: tuple[Coordinate, ...],
     ) -> None:
         """
@@ -17,11 +18,15 @@ class GeometricObject:
 
         @param name: A name to show in the object list
         @param obj_type: A string representing the specific type of the object
+        @param colour: A colour to draw the object
         @param coordinates: A tuple of Coordinate tuples
         """
         self._name = name
         self._type = obj_type
-        self._coordinates = coordinates
+        self._colour = colour
+        self._coordinates: NDArray[np.float64] = np.array(
+            [[*coord, 1] for coord in coordinates],
+        )
 
     def get_type(self) -> str:
         """
@@ -40,6 +45,9 @@ class GeometricObject:
         @returns: Name as a string
         """
         return self._name
+
+    def get_colour(self) -> tuple[int, int, int]:
+        return self._colour
 
     def get_coordinates(self) -> tuple[Coordinate, ...]:
         """
