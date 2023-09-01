@@ -3,7 +3,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from objects.factory import Factory
 from objects.geometricObject import Coordinate, GeometricObject
 
-from ui.generated.createObject import Ui_CreateObjectDialog
+from ui.generated.createObjectDialog import Ui_CreateObjectDialog
 
 
 class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
