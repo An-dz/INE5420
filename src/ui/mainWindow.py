@@ -71,6 +71,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         menu.addAction(self.actionAdd_Object)
         item = self.objectsList.itemAt(click_position)
         if item:
+            menu.addSeparator()
             action_transform = menu.addAction("Transform")
             if action_transform:
                 action_transform.triggered.connect(self.action_window_transform_object_translate)
