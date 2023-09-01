@@ -50,6 +50,11 @@ class GeometricObject:
         return self._name
 
     def get_colour(self) -> tuple[int, int, int]:
+        """
+        Returns the colour that was set for this object to be painted
+
+        @return: RGB tuple
+        """
         return self._colour
 
     def get_coordinates(self) -> tuple[Coordinate, ...]:
@@ -68,7 +73,12 @@ class GeometricObject:
         """
         return np.sum(self._coordinates, axis=0) / len(self._coordinates)
 
-    def transform(self, transform_matrix: NDArray[np.float64]):
+    def transform(self, transform_matrix: NDArray[np.float64]) -> None:
+        """
+        Transform the object throught a tranformation matrix
+
+        @param transform_matrix: Transformation Matrix to apply on the obejct
+        """
         self._coordinates = np.array(
             [*map(lambda x: x @ transform_matrix, self._coordinates)],  # noqa: C417
         )

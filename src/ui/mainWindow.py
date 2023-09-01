@@ -60,6 +60,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.action_create_object(Line("test", (246, 158, 67), (-33, -33), (66, 66)))
 
     def context_menu_event(self, click_position: QtCore.QPoint) -> None:
+        """
+        Listens to right-click event on object list
+
+        This allows adding options only on list items
+
+        @param click_position: Position that is being right-clicked relative to widget
+        """
         menu = QtWidgets.QMenu()
         menu.addAction(self.actionAdd_Object)
         item = self.objectsList.itemAt(click_position)
@@ -76,6 +83,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot(QtCore.QPoint)
     def mouse_move_event(self, ev: QtGui.QMouseEvent | None) -> None:
+        """
+        Listens to mouse movement events on viewport
+
+        @note Only runs after `mouse_click_event` is run
+
+        @param ev: Mouse event object
+        """
         if ev and self._mouse_coordinate is not None:
             delta = self._mouse_coordinate - ev.position()
             self._window_obj.pan(
@@ -87,11 +101,25 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     @QtCore.pyqtSlot(QtCore.QPoint)
     def mouse_release_event(self, ev: QtGui.QMouseEvent | None) -> None:
+        """
+        Listens to mouse button release events on viewport
+
+        @note Stops listening to click'n'hold gestures
+
+        @param ev: Mouse event object
+        """
         if ev and ev.button() == Qt.MouseButton.MiddleButton:
             self._mouse_coordinate = None
 
     @QtCore.pyqtSlot(QtCore.QPoint)
     def mouse_press_event(self, ev: QtGui.QMouseEvent | None) -> None:
+        """
+        Listens to mouse button press events on viewport
+
+        @note Starts listening to click'n'hold gestures
+
+        @param ev: Mouse event object
+        """
         if (
             ev
             and ev.button() == Qt.MouseButton.MiddleButton
@@ -146,26 +174,44 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self._viewport.draw()
 
     def action_move_left(self) -> None:
+        """
+        Click on move left button
+        """
         self._window_obj.move(-0.03, 0)
         self._viewport.draw()
 
     def action_move_right(self) -> None:
+        """
+        Click on move right button
+        """
         self._window_obj.move(0.03, 0)
         self._viewport.draw()
 
     def action_move_up(self) -> None:
+        """
+        Click on move up button
+        """
         self._window_obj.move(0, 0.03)
         self._viewport.draw()
 
     def action_move_down(self) -> None:
+        """
+        Click on move down button
+        """
         self._window_obj.move(0, -0.03)
         self._viewport.draw()
 
     def action_zoom_out(self) -> None:
+        """
+        Click on zoom out button
+        """
         self._window_obj.zoom(1.25)
         self._viewport.draw()
 
     def action_zoom_in(self) -> None:
+        """
+        Click on zoom in button
+        """
         self._window_obj.zoom(0.8)
         self._viewport.draw()
 
@@ -186,17 +232,28 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self._viewport.draw()
 
     def action_window_transform_object_translate(self) -> None:
+        """
+        Opens the Transform Object dialog on translate tab
+        """
         self.action_window_transform_object_tab(TransformDialog.Tab.Translate)
 
     def action_window_transform_object_scale(self) -> None:
+        """
+        Opens the Transform Object dialog on scale tab
+        """
         self.action_window_transform_object_tab(TransformDialog.Tab.Scale)
 
     def action_window_transform_object_rotate(self) -> None:
+        """
+        Opens the Transform Object dialog on rotate tab
+        """
         self.action_window_transform_object_tab(TransformDialog.Tab.Rotate)
 
     def action_window_transform_object_tab(self, tab: TransformDialog.Tab) -> None:
         """
         Opens the Transform Object dialog
+
+        @param tab: Which tab to open the dialog on
         """
         obj_index = self.objectsList.currentRow()
         if obj_index > -1 and obj_index < self.objectsList.count():
