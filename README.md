@@ -17,6 +17,7 @@ Available shortcuts:
 - `Mouse Scroll`: Zoom in/out
 - `Ctrl`+(`Num2`|`Num4`|`Num6`|`Num8`): Pan the window around
 - `Shift`+`Middle Mouse Button`: Pan the window around
+- `Ctrl`+`Middle Mouse Button`: Zoom the window
 - `Del`: Deletes the currently selected object
 - `N`/`G`: Open transform window on translate
 - `R`: Open transform window on rotate
