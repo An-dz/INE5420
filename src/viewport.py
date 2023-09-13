@@ -17,6 +17,7 @@ class Viewport:
         self._size = (viewport_canvas.width() - 2, viewport_canvas.height() - 2)
         self._canvas = QtGui.QPixmap(self._size[0], self._size[1])
         self._viewport_canvas = viewport_canvas
+        self._selected_colour = QtGui.QColor(246, 158, 67)
 
     def get_canvas(self) -> QtGui.QPixmap:
         """
@@ -34,7 +35,7 @@ class Viewport:
         """
         return self._viewport_canvas
 
-    def draw(self) -> None:
+    def draw(self, selected: int) -> None:
         """
         Redraws the viewport according to the window
         """
@@ -44,8 +45,12 @@ class Viewport:
         painter.setBackgroundMode(Qt.BGMode.OpaqueMode)
         painter.eraseRect(0, 0, self._size[0], self._size[1])
         objects = self._window.get_visible_objects()
-        for obj in objects:
-            drawing_color = QtGui.QColor(*obj.get_colour())
+
+        for index, obj in enumerate(objects):
+            drawing_color = (
+                QtGui.QColor(*obj.get_colour()) if selected != index
+                else self._selected_colour
+            )
             pen = QtGui.QPen(drawing_color)
             pen.setWidth(2)
             painter.setPen(pen)
