@@ -67,4 +67,4 @@ class Ui_CreateObjectDialog(object):
         self.label_coords.setText(_translate("CreateObjectDialog", "Coordinates"))
         self.inputCoordinates.setPlaceholderText(_translate("CreateObjectDialog", "(x1,y1),(x2,y2),..."))
         self.label_colour.setText(_translate("CreateObjectDialog", "Colour"))
-        self.inputColour.setPlaceholderText(_translate("CreateObjectDialog", "#000000"))
+        self.inputColour.setPlaceholderText(_translate("CreateObjectDialog", "#CCCCCC"))

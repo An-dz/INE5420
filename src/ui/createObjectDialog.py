@@ -35,7 +35,7 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
         Event fired when the dialog is accepted
         """
         name: str = self.inputName.text()
-        colour: Colour = (0, 0, 0)
+        colour: Colour = (204, 204, 204)
         colour_hex = self.inputColour.text()
 
         if len(colour_hex) == 4:
