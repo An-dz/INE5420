@@ -1,4 +1,4 @@
-from objects.geometricObject import Coordinate, GeometricObject
+from objects.geometricObject import Colour, Coordinate, GeometricObject
 
 
 class Line(GeometricObject):
@@ -6,7 +6,7 @@ class Line(GeometricObject):
     def __init__(
         self,
         name: str,
-        colour: tuple[int, int, int],
+        colour: Colour,
         start_point: Coordinate,
         end_point: Coordinate,
     ) -> None:
