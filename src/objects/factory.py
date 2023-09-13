@@ -1,4 +1,4 @@
-from objects.geometricObject import Colour, Coordinate, GeometricObject
+from objects.geometricObject import Colour, NormalCoordinate, GeometricObject
 from objects.line import Line
 from objects.point import Point
 from objects.wireframe import Wireframe
@@ -10,17 +10,18 @@ class Factory:
     def create_object(
         name: str,
         colour: Colour,
-        points: tuple[Coordinate, ...],
+        points: list[tuple[NormalCoordinate, NormalCoordinate]],
     ) -> GeometricObject:
         """
         Creates an appropriate geometric object according to the amount of points given
 
         @param name: A name to show in the object list
         @param colour: A colour to draw the object
-        @param points: A tuple of Coordinate tuples
+        @param points: A list of line segments,
+        if the initial and final points are equal its a point
         """
         if len(points) == 1:
-            return Point(name, colour, points[0])
-        if len(points) == 2:
-            return Line(name, colour, points[0], points[1])
+            if points[0][0] == points[0][1]:
+                return Point(name, colour, points[0][0])
+            return Line(name, colour, points[0][0], points[0][1])
         return Wireframe(name, colour, points)

@@ -1,8 +1,11 @@
+from typing import Literal
 import numpy as np
 from numpy.typing import NDArray
 
 Coordinate = tuple[float, float]
 """Coordinate in 2D plane"""
+NormalCoordinate = tuple[float, float, Literal[1]]
+"""Coordinate in 2D plane with normalised Z"""
 Colour = tuple[int, int, int]
 """A RGB colour tuple, each value goes from 0 to 255"""
 
@@ -14,7 +17,7 @@ class GeometricObject:
         name: str,
         obj_type: str,
         colour: Colour,
-        coordinates: tuple[Coordinate, ...],
+        coordinates: list[tuple[NormalCoordinate, NormalCoordinate]],
     ) -> None:
         """
         Creates a Geometric Object
@@ -29,9 +32,7 @@ class GeometricObject:
         self._name = name
         self._type = obj_type
         self._colour = colour
-        self._coordinates: NDArray[np.float64] = np.array(
-            [[*coord, 1] for coord in coordinates],
-        )
+        self._coordinates: NDArray[np.float64] = np.array(coordinates)
         self._window_coordinates: NDArray[np.float64] = np.array([])
 
     def get_type(self) -> str:
@@ -82,7 +83,7 @@ class GeometricObject:
 
         @returns: Coordinates of the center
         """
-        return np.sum(self._coordinates, axis=0) / len(self._coordinates)
+        return self._coordinates.sum(axis=0).sum(axis=0) / (len(self._coordinates) * 2)
 
     def set_window_coordinates(self, win_coords_matrix: NDArray[np.float64]) -> None:
         """

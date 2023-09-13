@@ -1,6 +1,7 @@
 from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import Qt
 from displayFile import DisplayFile
+from io_files.wavefront_obj import WavefrontDescriptor
 from objects.geometricObject import GeometricObject
 from ui.createObjectDialog import CreateObjectDialog
 from ui.generated.mainWindow import Ui_MainWindow
@@ -8,7 +9,6 @@ from ui.aboutDialog import AboutDialog
 from ui.transformDialog import TransformDialog
 from viewport import Viewport
 from window import Window
-from objects.line import Line
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -16,6 +16,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
         # set actions
+        self.actionWavefrontImport.triggered.connect(self.action_import_obj)
+        self.actionWavefrontExport.triggered.connect(self.action_export_obj)
+        self.actionWavefrontImport.setShortcut("Ctrl+O")
+        self.actionWavefrontExport.setShortcut("Ctrl+S")
         self.actionAdd_Object.triggered.connect(self.action_create_objectmenu)
         self.actionAbout.triggered.connect(self.action_about_menu)
         self.actionQuit.triggered.connect(self.action_quit_menu)
@@ -70,8 +74,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.viewportCanvas.mouseReleaseEvent = self.mouse_release_event
 
         self._viewport.draw()
-        # REMOVE: For testing purpose
-        self.action_create_object(Line("test", (246, 158, 67), (-33, -33), (66, 66)))
 
     def context_menu_event(self, click_position: QtCore.QPoint) -> None:
         """
@@ -318,6 +320,35 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             dialog = TransformDialog(geometric_obj=obj, window=self._window_obj, tab=tab)
             dialog.exec()
             self._viewport.draw()
+
+    def action_import_obj(self) -> None:
+        """
+        Import a Wavefront OBJ scene
+
+        @note Will open a dialog for choosing the file
+        """
+        file_name = QtWidgets.QFileDialog.getOpenFileName(
+            self,
+            "Open Wavefront (.obj)",
+            ".",
+            "Wavefront (*.obj)",
+        )
+        for obj in WavefrontDescriptor.import_file(file_name[0]):
+            self.action_create_object(obj)
+
+    def action_export_obj(self) -> None:
+        """
+        Export a scene in Wavefront OBJ format with MTL
+
+        @note Will open a dialog for choosing the save file
+        """
+        file_name = QtWidgets.QFileDialog.getSaveFileName(
+            self,
+            "Save Wavefront (.obj)",
+            ".",
+            "Wavefront (*.obj)",
+        )
+        WavefrontDescriptor.export_file(file_name[0], self._display_file)
 
     def action_create_objectmenu(self) -> None:
         """

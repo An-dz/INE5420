@@ -25,6 +25,8 @@ Available shortcuts:
 - `Num6`: Rotate clockwise
 - `Num4`: Rotate anti-clockwise
 - `Num7`: Reset rotation
+- `Ctrl+O`: Import Wavefront (.obj)
+- `Ctrl+S`: Export Wavefront (.obj)
 
 # Example Objects
 - `(54,62)`

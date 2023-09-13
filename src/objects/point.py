@@ -1,4 +1,4 @@
-from objects.geometricObject import Colour, Coordinate, GeometricObject
+from objects.geometricObject import Colour, NormalCoordinate, GeometricObject
 
 
 class Point(GeometricObject):
@@ -7,7 +7,7 @@ class Point(GeometricObject):
         self,
         name: str,
         colour: Colour,
-        coordinate: Coordinate,
+        coordinate: NormalCoordinate,
     ) -> None:
         """
         Creates a Point object
@@ -18,4 +18,4 @@ class Point(GeometricObject):
         @param colour: A colour to draw the object
         @param point: The Coordinates of the point
         """
-        super(Point, self).__init__(name, "Point", colour, (coordinate,))
+        super(Point, self).__init__(name, "Point", colour, [(coordinate, coordinate)])

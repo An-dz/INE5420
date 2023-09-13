@@ -1,4 +1,4 @@
-from objects.geometricObject import Colour, Coordinate, GeometricObject
+from objects.geometricObject import Colour, NormalCoordinate, GeometricObject
 
 
 class Line(GeometricObject):
@@ -7,8 +7,8 @@ class Line(GeometricObject):
         self,
         name: str,
         colour: Colour,
-        start_point: Coordinate,
-        end_point: Coordinate,
+        start_point: NormalCoordinate,
+        end_point: NormalCoordinate,
     ) -> None:
         """
         Creates a Line object
@@ -20,4 +20,4 @@ class Line(GeometricObject):
         @param colour: A colour to draw the object
         @param end_point: An ending Coordinate
         """
-        super(Line, self).__init__(name, "Line", colour, (start_point, end_point))
+        super(Line, self).__init__(name, "Line", colour, [(start_point, end_point)])
