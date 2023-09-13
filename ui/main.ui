@@ -67,7 +67,7 @@
            <widget class="QPushButton" name="movementButtonDown">
             <property name="geometry">
              <rect>
-              <x>50</x>
+              <x>90</x>
               <y>110</y>
               <width>31</width>
               <height>31</height>
@@ -80,7 +80,7 @@
            <widget class="QPushButton" name="movementButtonLeft">
             <property name="geometry">
              <rect>
-              <x>20</x>
+              <x>60</x>
               <y>80</y>
               <width>31</width>
               <height>31</height>
@@ -93,7 +93,7 @@
            <widget class="QPushButton" name="movementButtonRight">
             <property name="geometry">
              <rect>
-              <x>80</x>
+              <x>120</x>
               <y>80</y>
               <width>31</width>
               <height>31</height>
@@ -106,7 +106,7 @@
            <widget class="QPushButton" name="movementButtonUp">
             <property name="geometry">
              <rect>
-              <x>50</x>
+              <x>90</x>
               <y>50</y>
               <width>31</width>
               <height>31</height>
@@ -119,7 +119,7 @@
            <widget class="QPushButton" name="movementButtonZoomOut">
             <property name="geometry">
              <rect>
-              <x>150</x>
+              <x>160</x>
               <y>110</y>
               <width>31</width>
               <height>31</height>
@@ -132,7 +132,7 @@
            <widget class="QPushButton" name="movementButtonZoomIn">
             <property name="geometry">
              <rect>
-              <x>150</x>
+              <x>160</x>
               <y>50</y>
               <width>31</width>
               <height>31</height>
@@ -145,14 +145,14 @@
            <widget class="QLabel" name="movementPositionLabel">
             <property name="geometry">
              <rect>
-              <x>10</x>
+              <x>90</x>
               <y>30</y>
-              <width>111</width>
-              <height>18</height>
+              <width>31</width>
+              <height>20</height>
              </rect>
             </property>
             <property name="text">
-             <string>Position</string>
+             <string>Move</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignCenter</set>
@@ -161,10 +161,10 @@
            <widget class="QLabel" name="movementZoomLabel">
             <property name="geometry">
              <rect>
-              <x>130</x>
+              <x>155</x>
               <y>30</y>
-              <width>71</width>
-              <height>18</height>
+              <width>41</width>
+              <height>20</height>
              </rect>
             </property>
             <property name="text">
@@ -174,61 +174,64 @@
              <set>Qt::AlignCenter</set>
             </property>
            </widget>
-          </widget>
-         </item>
-         <item>
-          <widget class="QGroupBox" name="rotationGroupBox">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="title">
-            <string>Rotation</string>
-           </property>
-           <layout class="QVBoxLayout" name="verticalLayout_5" stretch="0,0">
-            <item>
-             <layout class="QHBoxLayout" name="rotationAngleConf">
-              <item>
-               <widget class="QLabel" name="rotationAngleLabel">
-                <property name="text">
-                 <string>Angle:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLineEdit" name="rotationAngleField">
-                <property name="text">
-                 <string>15</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="rotationButtons">
-              <item>
-               <widget class="QPushButton" name="rotationButtonX">
-                <property name="text">
-                 <string>X</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="rotationButtonY">
-                <property name="text">
-                 <string>Y</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="rotationButtonZ">
-                <property name="text">
-                 <string>Z</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
+           <widget class="QPushButton" name="movementButtonRotateAntiClockwise">
+            <property name="geometry">
+             <rect>
+              <x>20</x>
+              <y>110</y>
+              <width>31</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>↺</string>
+            </property>
+           </widget>
+           <widget class="QLabel" name="movementRotateLabel">
+            <property name="geometry">
+             <rect>
+              <x>10</x>
+              <y>30</y>
+              <width>51</width>
+              <height>20</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>Rotate</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+           <widget class="QPushButton" name="movementButtonRotateClockwise">
+            <property name="geometry">
+             <rect>
+              <x>20</x>
+              <y>50</y>
+              <width>31</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="text">
+             <string>↻</string>
+            </property>
+           </widget>
+           <widget class="QLineEdit" name="rotationAngleField">
+            <property name="geometry">
+             <rect>
+              <x>20</x>
+              <y>80</y>
+              <width>31</width>
+              <height>31</height>
+             </rect>
+            </property>
+            <property name="toolTip">
+             <string>Rotation steps in degrees</string>
+            </property>
+            <property name="text">
+             <string>15</string>
+            </property>
+           </widget>
           </widget>
          </item>
          <item>

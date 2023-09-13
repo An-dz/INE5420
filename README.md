@@ -21,6 +21,9 @@ Available shortcuts:
 - `N`/`G`: Open transform window on translate
 - `R`: Open transform window on rotate
 - `S`: Open transform window on scale
+- `Num6`: Rotate clockwise
+- `Num4`: Rotate anti-clockwise
+- `Num7`: Reset rotation
 
 # Example Objects
 - `(54,62)`

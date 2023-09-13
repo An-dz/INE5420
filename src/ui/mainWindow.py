@@ -25,10 +25,20 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.movementButtonUp.clicked.connect(self.action_move_up)
         self.movementButtonZoomOut.clicked.connect(self.action_zoom_out)
         self.movementButtonZoomIn.clicked.connect(self.action_zoom_in)
+        self.movementButtonRotateClockwise.clicked.connect(self.action_rotate_clockwise)
+        self.movementButtonRotateAntiClockwise.clicked.connect(
+            self.action_rotate_anticlockwise,
+        )
         self.keyboardZoomIn = QtGui.QShortcut(QtGui.QKeySequence("+"), self)
         self.keyboardZoomOut = QtGui.QShortcut(QtGui.QKeySequence("-"), self)
         self.keyboardZoomIn.activated.connect(self.action_zoom_in)
         self.keyboardZoomOut.activated.connect(self.action_zoom_out)
+        self.keyboardResetRotate = QtGui.QShortcut(QtGui.QKeySequence("7"), self)
+        self.keyboardRotateClock = QtGui.QShortcut(QtGui.QKeySequence("6"), self)
+        self.keyboardRotateAntiClock = QtGui.QShortcut(QtGui.QKeySequence("4"), self)
+        self.keyboardResetRotate.activated.connect(self.action_rotate_reset)
+        self.keyboardRotateClock.activated.connect(self.action_rotate_clockwise)
+        self.keyboardRotateAntiClock.activated.connect(self.action_rotate_anticlockwise)
         self.keyboardDeleteObject = QtGui.QShortcut(QtGui.QKeySequence("Del"), self)
         self.keyboardDeleteObject.activated.connect(self.action_delete_object)
         self.actionAdd_Object.setShortcut("Shift+A")
@@ -41,13 +51,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionScale.setShortcut("S")
         self.actionRotate.setShortcut("R")
 
+        re = QtCore.QRegularExpression("-?\\d*\\.\\d*")
+        self.rotationAngleField.setValidator(QtGui.QRegularExpressionValidator(re))
+
         self._icons = icons
 
         self.objectsList.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.objectsList.customContextMenuRequested.connect(self.context_menu_event)
 
         self._display_file = DisplayFile()
-        self._window_obj = Window(self._display_file, (-100, -100), (100, 100))
+        self._window_obj = Window(self._display_file, (0, 0), (200, 200))
         self._viewport = Viewport(self._window_obj, self.viewportCanvas)
         self._mouse_coordinate: QtCore.QPointF | None = None
         self.viewportCanvas.wheelEvent = self.mouse_scroll_event
@@ -216,6 +229,39 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self._window_obj.zoom(0.8)
         self._viewport.draw()
 
+    def action_rotate_clockwise(self) -> None:
+        """
+        Rotate the world clockwise
+
+        @note Angle is set on the interface and is loaded on the fly
+        """
+        try:
+            angle = float(self.rotationAngleField.text())
+            self._window_obj.rotate(angle)
+            self._viewport.draw()
+        except Exception:
+            pass
+
+    def action_rotate_anticlockwise(self) -> None:
+        """
+        Rotate the world anti-clockwise
+
+        @note Angle is set on the interface and is loaded on the fly
+        """
+        try:
+            angle = -float(self.rotationAngleField.text())
+            self._window_obj.rotate(angle)
+            self._viewport.draw()
+        except Exception:
+            pass
+
+    def action_rotate_reset(self) -> None:
+        """
+        Resets the rotation back to Y and V being aligned
+        """
+        self._window_obj.rotate(0)
+        self._viewport.draw()
+
     def action_create_object(self, obj: GeometricObject) -> None:
         """
         Adds a created object into the display file and the object list UI
@@ -259,7 +305,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         obj_index = self.objectsList.currentRow()
         if obj_index > -1 and obj_index < self.objectsList.count():
             obj = self._display_file.at(obj_index)
-            dialog = TransformDialog(geometric_obj=obj, tab=tab)
+            dialog = TransformDialog(geometric_obj=obj, window=self._window_obj, tab=tab)
             dialog.exec()
             self._viewport.draw()
 

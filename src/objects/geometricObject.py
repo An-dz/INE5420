@@ -30,6 +30,7 @@ class GeometricObject:
         self._coordinates: NDArray[np.float64] = np.array(
             [[*coord, 1] for coord in coordinates],
         )
+        self._window_coordinates: NDArray[np.float64] = np.array([])
 
     def get_type(self) -> str:
         """
@@ -57,13 +58,21 @@ class GeometricObject:
         """
         return self._colour
 
-    def get_coordinates(self) -> tuple[Coordinate, ...]:
+    def get_coordinates(self) -> NDArray[np.float64]:
         """
-        Returns the coordinates of each point of the object
+        Returns the global coordinates of each point of the object
 
-        @returns: Tuple of coordinates for each point
+        @returns: Tuple of global coordinates for each point
         """
-        return tuple(self._coordinates)
+        return self._coordinates
+
+    def get_window_coordinates(self) -> NDArray[np.float64]:
+        """
+        Returns the window coordinates of each point of the object
+
+        @returns: Tuple of window coordinates for each point
+        """
+        return self._window_coordinates
 
     def get_center(self) -> NDArray[np.float64]:
         """
@@ -73,12 +82,24 @@ class GeometricObject:
         """
         return np.sum(self._coordinates, axis=0) / len(self._coordinates)
 
-    def transform(self, transform_matrix: NDArray[np.float64]) -> None:
+    def set_window_coordinates(self, win_coords_matrix: NDArray[np.float64]) -> None:
+        """
+        Sets the window coordinates of the object
+
+        @param win_coords_matrix: Matrix to transform the global coordinates
+        into window coordinates
+        """
+        self._window_coordinates = self._coordinates @ win_coords_matrix
+
+    def transform(
+        self,
+        transform_matrix: NDArray[np.float64],
+        window_matrix: NDArray[np.float64],
+    ) -> None:
         """
         Transform the object throught a tranformation matrix
 
         @param transform_matrix: Transformation Matrix to apply on the obejct
         """
-        self._coordinates = np.array(
-            [*map(lambda x: x @ transform_matrix, self._coordinates)],  # noqa: C417
-        )
+        self._coordinates = self._coordinates @ transform_matrix
+        self.set_window_coordinates(window_matrix)

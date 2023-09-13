@@ -1,10 +1,18 @@
+import numpy as np
+from numpy.typing import NDArray
 from objects.geometricObject import GeometricObject
 
 
 class DisplayFile:
     """The Display File holds all objetcts in the scene"""
     def __init__(self) -> None:
+        """
+        Creates the Display File
+        """
         self._objects: list[GeometricObject] = []
+        self._scn_matrix: NDArray[np.float64] = np.array(
+            [[0, 0, 0], [0, 0, 0], [0, 0, 1]],
+        )
 
     def at(self, index: int) -> GeometricObject:
         """
@@ -23,6 +31,7 @@ class DisplayFile:
         @param obj: The geometric object to include into the world
         """
         self._objects.append(obj)
+        obj.set_window_coordinates(self._scn_matrix)
 
     def remove(self, index: int) -> None:
         """
@@ -39,3 +48,13 @@ class DisplayFile:
         @returns: All objects in the display file
         """
         return self._objects
+
+    def set_scn_matrix(self, matrix: NDArray[np.float64]) -> None:
+        """
+        Sets the matrix that transform global coordinates into SCN coordinates
+
+        @param matrix: Matrix to transform the global coordinates into SCN coordinates
+        """
+        self._scn_matrix = matrix
+        for obj in self._objects:
+            obj.set_window_coordinates(matrix)
