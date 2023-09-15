@@ -1,5 +1,6 @@
 import numpy as np
 from numpy.typing import NDArray
+
 from displayFile import DisplayFile
 from objects.geometricObject import Coordinate
 from transformation import rotate_matrix, scale_matrix, translate

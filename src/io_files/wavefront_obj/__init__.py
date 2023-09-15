@@ -1,8 +1,9 @@
 from pathlib import Path
+
 from displayFile import DisplayFile
-from io_files.wavefront_obj.mtllib import MaterialLibraryWriter, MaterialLibraryReader
-from objects.geometricObject import NormalCoordinate, GeometricObject
+from io_files.wavefront_obj.mtllib import MaterialLibraryReader, MaterialLibraryWriter
 from objects.factory import Factory
+from objects.geometricObject import GeometricObject, NormalCoordinate
 
 
 class WavefrontDescriptor:

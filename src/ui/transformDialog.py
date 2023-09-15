@@ -1,7 +1,6 @@
 from enum import IntEnum
-from PyQt6 import QtGui, QtWidgets
-from PyQt6 import QtCore
-from PyQt6.QtCore import Qt
+
+from PyQt6 import QtCore, QtGui, QtWidgets
 import numpy as np
 from numpy.typing import NDArray
 
@@ -91,7 +90,7 @@ class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
         @param text: new value for X scaling
         """
         # if the aspect ratio is checked we keep both X & Y equal
-        if self.checkBoxScaleAspect.checkState() == Qt.CheckState.Checked:
+        if self.checkBoxScaleAspect.checkState() == QtCore.Qt.CheckState.Checked:
             self.inputScaleSy.setText(text)
 
     def event_rotate_center_toggled(self, state: bool) -> None:
