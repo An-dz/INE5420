@@ -399,8 +399,25 @@
     </property>
     <addaction name="actionAbout"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <widget class="QMenu" name="menuClipping">
+     <property name="title">
+      <string>Clipping</string>
+     </property>
+     <addaction name="actionPoints"/>
+     <addaction name="actionCohen_Sutherland"/>
+     <addaction name="actionLiang_Barsky"/>
+     <addaction name="actionNicholl_Lee_Nicholl"/>
+    </widget>
+    <addaction name="actionLogs_Panel"/>
+    <addaction name="menuClipping"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuObjects"/>
+   <addaction name="menuView"/>
    <addaction name="menuAbout"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -445,6 +462,49 @@
   <action name="actionWavefrontExport">
    <property name="text">
     <string>Wavefront (.obj)</string>
+   </property>
+  </action>
+  <action name="actionLogs_Panel">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Logs Panel</string>
+   </property>
+  </action>
+  <action name="actionPoints">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Points</string>
+   </property>
+  </action>
+  <action name="actionCohen_Sutherland">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Cohen-Sutherland</string>
+   </property>
+  </action>
+  <action name="actionLiang_Barsky">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Liang-Barsky</string>
+   </property>
+  </action>
+  <action name="actionNicholl_Lee_Nicholl">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Nicholl-Lee-Nicholl</string>
    </property>
   </action>
  </widget>

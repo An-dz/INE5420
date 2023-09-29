@@ -3,6 +3,8 @@ from typing import Literal
 import numpy as np
 from numpy.typing import NDArray
 
+from objects.clipping import Clipping, ClippingAlgo
+
 Coordinate = tuple[float, float]
 """Coordinate in 2D plane"""
 NormalCoordinate = tuple[float, float, Literal[1]]
@@ -21,7 +23,7 @@ Colour = tuple[int, int, int]
 """A RGB colour tuple, each value goes from 0 to 255"""
 
 
-class GeometricObject:
+class GeometricObject(Clipping):
     """Geometric Object is the base class for all objects that can be drawn"""
     def __init__(
         self,
@@ -99,7 +101,11 @@ class GeometricObject:
         """
         return self._center
 
-    def set_window_coordinates(self, win_coords_matrix: NDArray[np.float64]) -> None:
+    def set_window_coordinates(
+        self,
+        win_coords_matrix: NDArray[np.float64],
+        line_clip: ClippingAlgo,
+    ) -> None:
         """
         Sets the window coordinates of the object
 
@@ -110,12 +116,32 @@ class GeometricObject:
         self._window_coordinates = []
 
         for coords in self._coordinates:
-            self._window_coordinates.append(coords @ win_coords_matrix)
+            win_coords = coords @ win_coords_matrix
+            vertex_count = len(win_coords)
+            obj = None
+
+            if vertex_count == 1:  # point
+                obj = self.clip_by_point(win_coords)
+            elif vertex_count == 2:  # edge
+                if line_clip == ClippingAlgo.Points:
+                    obj = self.clip_by_point(win_coords)
+                elif line_clip == ClippingAlgo.CohenSutherland:
+                    obj = self.clip_cohen_sutherland(win_coords)
+                elif line_clip == ClippingAlgo.LiangBarsky:
+                    obj = self.clip_liang_barsky(win_coords)
+                elif line_clip == ClippingAlgo.NichollLeeNicholl:
+                    obj = self.clip_nicholl_lee_nicholl(win_coords)
+            else:  # face
+                obj = self.clip_sutherland_hodgeman(win_coords)
+
+            if obj is not None:
+                self._window_coordinates.append(obj)
 
     def transform(
         self,
         transform_matrix: NDArray[np.float64],
         window_matrix: NDArray[np.float64],
+        line_clip: ClippingAlgo,
     ) -> None:
         """
         Transform the object throught a tranformation matrix
@@ -124,4 +150,4 @@ class GeometricObject:
         """
         self._coordinates = [c @ transform_matrix for c in self._coordinates]
         self._center = self._center @ transform_matrix
-        self.set_window_coordinates(window_matrix)
+        self.set_window_coordinates(window_matrix, line_clip)
