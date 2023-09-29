@@ -3,7 +3,7 @@ from pathlib import Path
 from displayFile import DisplayFile
 from io_files.wavefront_obj.mtllib import MaterialLibraryReader, MaterialLibraryWriter
 from objects.factory import Factory
-from objects.geometricObject import GeometricObject, NormalCoordinate
+from objects.geometricObject import GeometricObject, NormalCoordinate, ObjectsList
 
 
 class WavefrontDescriptor:
@@ -30,19 +30,20 @@ class WavefrontDescriptor:
             object_colour = (204, 204, 204)
             object_index = 0
             mtl_file = None
-            object_edges: list[tuple[NormalCoordinate, NormalCoordinate]] = []
+            object_types: ObjectsList = []
 
             for line in file:
                 items = line.split()
 
                 if items:
-                    if len(object_edges) > 0 and items[0] not in ["l", "f"]:
+                    if len(object_types) > 0 and items[0] not in ["l", "f", "p"]:
                         objects.append(Factory.create_object(
-                            "{}".format(object_name),
+                            object_name,
                             object_colour,
-                            object_edges,
+                            vertices,
+                            object_types,
                         ))
-                        object_edges = []
+                        object_types = []
 
                     #-----------------------------------------#
                     #               Vertex data               #
@@ -59,32 +60,20 @@ class WavefrontDescriptor:
                         for i in range(1, len(items)):
                             object_index += 1
                             point = vertices[int(items[i].split("/")[0]) - 1]
-                            objects.append(Factory.create_object(
-                                "{}{}".format(
-                                    object_name,
-                                    "" if object_index == 0 else ".{:0>3}".format(
-                                        object_index,
-                                    ),
-                                ),
-                                object_colour,
-                                [(point, point)],
-                            ))
+                            object_types.append((point, ))
                     elif items[0] == "l":  # line
                         for i in range(2, len(items)):
-                            object_edges.append((
+                            object_types.append((
                                 vertices[int(items[i - 1].split("/")[0]) - 1],
                                 vertices[int(items[i].split("/")[0]) - 1],
                             ))
                     elif items[0] == "f":  # face
-                        for i in range(2, len(items)):
-                            object_edges.append((
-                                vertices[int(items[i - 1].split("/")[0]) - 1],
-                                vertices[int(items[i].split("/")[0]) - 1],
-                            ))
-                        object_edges.append((
-                            vertices[int(items[-1].split("/")[0]) - 1],
-                            vertices[int(items[1].split("/")[0]) - 1],
-                        ))
+                        object_types.append(
+                            tuple(
+                                vertices[int(items[i].split("/")[0]) - 1]
+                                for i in range(1, len(items))
+                            ),
+                        )
                     # elif items[0] == "curv":  # curve
                     # elif items[0] == "curv2":  # 2D curve
                     # elif items[0] == "surf":  # surface
@@ -140,11 +129,12 @@ class WavefrontDescriptor:
                     # elif items[0] == "ctech":  # curve approximation technique
                     # elif items[0] == "stech":  # surface approximation technique
 
-        if len(object_edges) > 0:
+        if len(object_types) > 0:
             objects.append(Factory.create_object(
-                "{}".format(object_name),
+                object_name,
                 object_colour,
-                object_edges,
+                vertices,
+                object_types,
             ))
 
         return objects
