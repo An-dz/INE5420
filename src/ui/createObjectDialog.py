@@ -3,7 +3,13 @@ from typing import Callable
 from PyQt6 import QtCore, QtGui, QtWidgets
 
 from objects.factory import Factory
-from objects.geometricObject import Colour, Coordinate, GeometricObject, NormalCoordinate
+from objects.geometricObject import (
+    Colour,
+    Coordinate,
+    GeometricObject,
+    ObjectsList,
+    VerticesList,
+)
 from ui.generated.createObjectDialog import Ui_CreateObjectDialog
 
 
@@ -24,12 +30,85 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
         self._callback = callback
         self.setupUi(self)
 
-        re = QtCore.QRegularExpression(
-            "(\\(-?\\d*(\\.\\d*)?\\s*,\\s*-?\\d*(\\.\\d*)?\\),)*\\(-?\\d*(\\.\\d*)?\\s*,\\s*-?\\d*(\\.\\d*)?\\)",  # noqa: E501
-        )
+        self._valid_input = {
+            "coords": False,
+            "colour": True,
+        }
+
+        re = QtCore.QRegularExpression("[0-9(),. -]+")
         self.inputCoordinates.setValidator(QtGui.QRegularExpressionValidator(re))
+        self.inputCoordinates.textChanged.connect(self.check_coordinates)
         re = QtCore.QRegularExpression("#[0-9a-fA-F]{6}")
         self.inputColour.setValidator(QtGui.QRegularExpressionValidator(re))
+        self.inputColour.textChanged.connect(self.check_colour)
+        ok_button = self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok)
+        if ok_button:
+            ok_button.setEnabled(False)
+
+    def check_coordinates(self, text: str) -> None:
+        """
+        Validate input for the coordinates input
+
+        @param text: Current text of the input element
+        """
+        ok_button = self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok)
+
+        if ok_button:
+            error_msg = "Coordinates are not in the expected format"
+
+            try:
+                vertices: tuple = tuple(eval(text + ","))
+
+                # input is only valid for tuples of coordinates
+                for vertex in vertices:
+                    if (
+                        len(vertex) != 2 or not (
+                            isinstance(vertex[0], float) or isinstance(vertex[0], int)
+                        ) or not (
+                            isinstance(vertex[1], float) or isinstance(vertex[1], int)
+                        )
+                    ):
+                        raise
+
+                error_msg = (
+                    "Polygons need at least 3 vertices and "
+                    + "must start and end on the same vertex"
+                )
+
+                self._valid_input["coords"] = True
+                ok_button.setEnabled(self._valid_input["colour"])
+                if len(vertices) > 3 and vertices[0] == vertices[-1]:
+                    self.checkboxPolygon.setEnabled(True)
+                    self.checkboxPolygon.setToolTip(
+                        "Create the object as polygon that is filled instead "
+                        + "of a wireframe object that only draws edges",
+                    )
+                    return
+            except Exception:
+                error_msg = "Coordinates are not in the expected format"
+                self._valid_input["coords"] = False
+                ok_button.setEnabled(False)
+
+            self.checkboxPolygon.setChecked(False)
+            self.checkboxPolygon.setEnabled(False)
+            self.checkboxPolygon.setToolTip(error_msg)
+
+    def check_colour(self, text: str) -> None:
+        """
+        Validate input for the colour input
+
+        @param text: Current text of the input element
+        """
+        ok_button = self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok)
+
+        if ok_button:
+            if len(text) == 0 or len(text) == 4 or len(text) == 7:
+                self._valid_input["colour"] = True
+                ok_button.setEnabled(self._valid_input["coords"])
+                return
+
+            self._valid_input["colour"] = False
+            ok_button.setEnabled(False)
 
     def accept(self) -> None:
         """
@@ -53,21 +132,30 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
             )
 
         try:
-            points: tuple[Coordinate, ...] = tuple(
+            vertices_tuple: tuple[Coordinate, ...] = tuple(
                 eval(self.inputCoordinates.text() + ","),
             )
-            coords: list[tuple[NormalCoordinate, NormalCoordinate]] = []
+            vertices_normal: VerticesList = [(*v, 1) for v in vertices_tuple]
+            object_list: ObjectsList = []
 
-            if len(points) == 1:
-                coords = [((*points[0], 1), (*points[0], 1))]
+            if len(vertices_normal) == 1:
+                object_list = [tuple(vertices_normal)]
+            elif self.checkboxPolygon.isChecked():
+                vertices_normal.pop()
+                object_list = [tuple(vertices_normal)]
             else:
-                points_iter = iter(points)
-                last_point = next(points_iter)
-                for point in points_iter:
-                    coords.append(((*last_point, 1), (*point, 1)))
-                    last_point = point
+                vertices_iter = iter(vertices_normal)
+                last_vertex = next(vertices_iter)
+                for vertex in vertices_iter:
+                    object_list.append((last_vertex, vertex))
+                    last_vertex = vertex
 
-            self._callback(Factory.create_object(name, colour, coords))
+            self._callback(Factory.create_object(
+                name,
+                colour,
+                vertices_normal,
+                object_list,
+            ))
             self.close()
         except Exception:
             return

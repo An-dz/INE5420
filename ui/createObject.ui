@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>467</width>
-    <height>212</height>
+    <height>242</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -19,13 +19,13 @@
   <property name="minimumSize">
    <size>
     <width>200</width>
-    <height>212</height>
+    <height>242</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>16777215</width>
-    <height>212</height>
+    <height>242</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -53,6 +53,16 @@
     <widget class="QLineEdit" name="inputCoordinates">
      <property name="placeholderText">
       <string>(x1,y1),(x2,y2),...</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="checkboxPolygon">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="text">
+      <string>Fill Polygon</string>
      </property>
     </widget>
    </item>

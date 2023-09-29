@@ -7,6 +7,16 @@ Coordinate = tuple[float, float]
 """Coordinate in 2D plane"""
 NormalCoordinate = tuple[float, float, Literal[1]]
 """Coordinate in 2D plane with normalised Z"""
+VerticesList = list[NormalCoordinate]
+"""List of vertices in Normalised Coordinates"""
+ObjectsList = list[tuple[NormalCoordinate, ...]]
+"""
+List of the basic types (points, edges & faces) as tuples of Normalised Coordinates
+
+ - Points are represented as a tuple of single values  
+ - Edges are represented as tuples of two values  
+ - Faces are represented as tuples of more than two values
+"""
 Colour = tuple[int, int, int]
 """A RGB colour tuple, each value goes from 0 to 255"""
 
@@ -18,7 +28,8 @@ class GeometricObject:
         name: str,
         obj_type: str,
         colour: Colour,
-        coordinates: list[tuple[NormalCoordinate, NormalCoordinate]],
+        vertices: VerticesList,
+        obj_list: ObjectsList,
     ) -> None:
         """
         Creates a Geometric Object
@@ -28,13 +39,15 @@ class GeometricObject:
         @param name: A name to show in the object list
         @param obj_type: A string representing the specific type of the object
         @param colour: A colour to draw the object
-        @param coordinates: A tuple of Coordinate tuples
+        @param obj_list: A list of tuples of NormalCoordinates
         """
         self._name = name
         self._type = obj_type
         self._colour = colour
-        self._coordinates: NDArray[np.float64] = np.array(coordinates)
-        self._window_coordinates: NDArray[np.float64] = np.array([])
+        self._coordinates: list[NDArray[np.float64]] = [np.array(c) for c in obj_list]
+        self._window_coordinates: list[NDArray[np.float64]] = []
+        unique_vertices = np.unique(np.array(vertices), axis=0)
+        self._center = unique_vertices.sum(axis=0) / len(unique_vertices)
 
     def get_type(self) -> str:
         """
@@ -62,7 +75,7 @@ class GeometricObject:
         """
         return self._colour
 
-    def get_coordinates(self) -> NDArray[np.float64]:
+    def get_coordinates(self) -> list[NDArray[np.float64]]:
         """
         Returns the global coordinates of each point of the object
 
@@ -70,7 +83,7 @@ class GeometricObject:
         """
         return self._coordinates
 
-    def get_window_coordinates(self) -> NDArray[np.float64]:
+    def get_window_coordinates(self) -> list[NDArray[np.float64]]:
         """
         Returns the window coordinates of each point of the object
 
@@ -84,7 +97,7 @@ class GeometricObject:
 
         @returns: Coordinates of the center
         """
-        return self._coordinates.sum(axis=0).sum(axis=0) / (len(self._coordinates) * 2)
+        return self._center
 
     def set_window_coordinates(self, win_coords_matrix: NDArray[np.float64]) -> None:
         """
@@ -93,7 +106,11 @@ class GeometricObject:
         @param win_coords_matrix: Matrix to transform the global coordinates
         into window coordinates
         """
-        self._window_coordinates = self._coordinates @ win_coords_matrix
+        coords: NDArray[np.float64]
+        self._window_coordinates = []
+
+        for coords in self._coordinates:
+            self._window_coordinates.append(coords @ win_coords_matrix)
 
     def transform(
         self,
@@ -105,5 +122,6 @@ class GeometricObject:
 
         @param transform_matrix: Transformation Matrix to apply on the obejct
         """
-        self._coordinates = self._coordinates @ transform_matrix
+        self._coordinates = [c @ transform_matrix for c in self._coordinates]
+        self._center = self._center @ transform_matrix
         self.set_window_coordinates(window_matrix)

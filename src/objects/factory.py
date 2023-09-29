@@ -1,6 +1,7 @@
-from objects.geometricObject import Colour, GeometricObject, NormalCoordinate
+from objects.geometricObject import Colour, GeometricObject, ObjectsList, VerticesList
 from objects.line import Line
 from objects.point import Point
+from objects.polygon import Polygon
 from objects.wireframe import Wireframe
 
 
@@ -10,7 +11,8 @@ class Factory:
     def create_object(
         name: str,
         colour: Colour,
-        points: list[tuple[NormalCoordinate, NormalCoordinate]],
+        vertices: VerticesList,
+        obj_types: ObjectsList,
     ) -> GeometricObject:
         """
         Creates an appropriate geometric object according to the amount of points given
@@ -20,8 +22,16 @@ class Factory:
         @param points: A list of line segments,
         if the initial and final points are equal its a point
         """
-        if len(points) == 1:
-            if points[0][0] == points[0][1]:
-                return Point(name, colour, points[0][0])
-            return Line(name, colour, points[0][0], points[0][1])
-        return Wireframe(name, colour, points)
+        obj_amount = len(obj_types)
+        coord_amount = len(obj_types[0])
+        if obj_amount == 1 and coord_amount == 1:
+            return Point(name, colour, obj_types[0][0])
+
+        if obj_amount == 1 and coord_amount == 2:
+            return Line(name, colour, obj_types[0][0], obj_types[0][1])
+
+        for obj in obj_types:
+            if len(obj) > 2:
+                return Polygon(name, colour, vertices, obj_types)
+
+        return Wireframe(name, colour, vertices, obj_types)

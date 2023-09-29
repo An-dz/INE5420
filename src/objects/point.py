@@ -18,4 +18,4 @@ class Point(GeometricObject):
         @param colour: A colour to draw the object
         @param point: The Coordinates of the point
         """
-        super(Point, self).__init__(name, "Point", colour, [(coordinate, coordinate)])
+        super(Point, self).__init__(name, "Point", colour, (coordinate,), [(coordinate,)])

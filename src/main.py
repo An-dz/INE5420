@@ -15,6 +15,7 @@ icons = {
     "Point": QtGui.QIcon(os.path.join(script_dir, "assets/point.png")),
     "Line": QtGui.QIcon(os.path.join(script_dir, "assets/line.png")),
     "Wireframe": QtGui.QIcon(os.path.join(script_dir, "assets/wireframe.png")),
+    "Polygon": QtGui.QIcon(os.path.join(script_dir, "assets/polygon.png")),
 }
 
 window = MainWindow(icons)
