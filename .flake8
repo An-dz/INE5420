@@ -1,0 +1,14 @@
+[flake8]
+# https://lintlyci.github.io/Flake8Rules/
+# E221: Complains about multiple spaces around operator, can't align key/values (key   =   value)
+# E241: Complains about multiple spaces after colon, can't align key/value (key:    value)
+# E272: Complains about multiple spaces before keyword, can't align key/value (keyword     is not)
+# E265: Forces comments to always have a space after the first # (#########)
+# E266: Complains about comments that have more than one # sequentially (##### Block #####)
+# W503: W504 is the new PEP8 standard, W503 is the older and so can be disabled
+# SML002: Too many false positives
+# S322: input is safe in Python3
+# T800: no spaces between parameter annotation and default value
+select = Q0
+ignore = E221,E241,E265,E266,E272,W503,SML002,S322,T800,W191,JS102
+inline-quotes = double
