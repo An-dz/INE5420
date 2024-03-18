@@ -49,27 +49,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     self.actionMoveUp()
 
     def actionMoveLeft(self) -> None:
-        self._window_obj.move(-20, 0)
+        self._window_obj.move(-0.03, 0)
         self._viewport.draw()
 
     def actionMoveRight(self) -> None:
-        self._window_obj.move(20, 0)
+        self._window_obj.move(0.03, 0)
         self._viewport.draw()
 
     def actionMoveUp(self) -> None:
-        self._window_obj.move(0, 20)
+        self._window_obj.move(0, 0.03)
         self._viewport.draw()
 
     def actionMoveDown(self) -> None:
-        self._window_obj.move(0, -20)
+        self._window_obj.move(0, -0.03)
         self._viewport.draw()
 
     def actionZoomOut(self) -> None:
-        self._window_obj.zoom(2)
+        self._window_obj.zoom(1.25)
         self._viewport.draw()
 
     def actionZoomIn(self) -> None:
-        self._window_obj.zoom(0.5)
+        self._window_obj.zoom(0.8)
         self._viewport.draw()
 
     def actionAboutMenu(self) -> None:
