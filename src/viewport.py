@@ -9,7 +9,7 @@ class Viewport:
         self._window = window
         self._size = size
         self._graphic_scene = QtWidgets.QGraphicsScene()
-        drawing_color = QtGui.QColor("black")
+        drawing_color = QtGui.QColor(246, 158, 67)
         self._pen = QtGui.QPen(drawing_color)
         self._pen.setWidth(2)
         self._brush = QtGui.QBrush(drawing_color)

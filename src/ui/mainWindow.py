@@ -1,4 +1,4 @@
-from PyQt6 import QtWidgets
+from PyQt6 import QtWidgets, QtGui
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QKeyEvent, QKeySequence, QShortcut
 from ui.generated.mainWindow import Ui_MainWindow
@@ -26,6 +26,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self._window_obj = Window((-100,-100), (100,100))
         self._viewport = Viewport(self._window_obj, (self.graphicsView.height() - 2, self.graphicsView.width() - 2))
+        self.graphicsView.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(61, 61, 61)))
         self.graphicsView.setScene(self._viewport.getScene())
         self.graphicsView.setSceneRect(0,0,self.graphicsView.height() - 2,self.graphicsView.width() - 2)
         self._viewport.draw()
