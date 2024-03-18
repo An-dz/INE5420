@@ -1,8 +1,7 @@
-from .point import Point
+from objects.geometricObject import Coordinate, GeometricObject
 
 
-class Line:
-	"""A line consists of two points in space"""
-	def __init__(self, x1: float, y1: float, z1: float, x2: float, y2: float, z2: float):
-		self.point_start = Point(x1, y1, z1)
-		self.point_end = Point(x2, y2, z2)
+class Line(GeometricObject):
+    """A line consists of two points in space"""
+    def __init__(self, name: str, start_point: Coordinate, end_point: Coordinate) -> None:
+        super(Line, self).__init__(name, "Line", [ start_point, end_point ])
