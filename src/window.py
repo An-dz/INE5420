@@ -32,3 +32,9 @@ class Window:
     def getYW(self, yw: float) -> float:
         (yw_min, yw_max) = self._y_coordinates
         return 1 - ((yw - yw_min) / (yw_max - yw_min))
+
+    def move(self, dx: float, dy: float) -> None:
+        self._x_coordinates[0] += dx
+        self._x_coordinates[1] += dx
+        self._y_coordinates[0] += dy
+        self._y_coordinates[1] += dy

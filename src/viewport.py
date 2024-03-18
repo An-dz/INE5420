@@ -18,6 +18,7 @@ class Viewport:
         return self._graphic_scene
 
     def draw(self):
+        self._graphic_scene.clear()
         objects = self._window.getVisibleObjects()
         for obj in objects:
             coords = iter(obj.getCoordinates())
