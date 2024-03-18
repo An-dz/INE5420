@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file 'mixer.ui'
+# Form implementation generated from reading ui file 'ui/main.ui'
 #
 # Created by: PyQt6 UI code generator 6.5.2
 #
@@ -126,6 +126,13 @@ class Ui_MainWindow(object):
         self.viewportBox = QtWidgets.QGroupBox(parent=self.centralwidget)
         self.viewportBox.setMinimumSize(QtCore.QSize(400, 0))
         self.viewportBox.setObjectName("viewportBox")
+        self.graphicsView = QtWidgets.QGraphicsView(parent=self.viewportBox)
+        self.graphicsView.setGeometry(QtCore.QRect(10, 30, 441, 441))
+        self.graphicsView.setAutoFillBackground(True)
+        brush = QtGui.QBrush(QtGui.QColor(255, 255, 255))
+        brush.setStyle(QtCore.Qt.BrushStyle.SolidPattern)
+        self.graphicsView.setBackgroundBrush(brush)
+        self.graphicsView.setObjectName("graphicsView")
         self.mainSide.addWidget(self.viewportBox)
         self.logsScrollArea = QtWidgets.QScrollArea(parent=self.centralwidget)
         self.logsScrollArea.setMaximumSize(QtCore.QSize(16777215, 100))
