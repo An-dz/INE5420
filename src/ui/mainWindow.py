@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QKeyEvent, QKeySequence, QShortcut
+from PyQt6.QtGui import QKeyEvent, QKeySequence, QShortcut, QWheelEvent
 from displayFile import DisplayFile
 from objects.geometricObject import GeometricObject
 from ui.createObject import CreateObjectDialog
@@ -34,8 +34,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self._display_file = DisplayFile()
         self._window_obj = Window(self._display_file, (-100, -100), (100, 100))
         self._viewport = Viewport(self._window_obj, self.viewportCanvas)
+        self.viewportCanvas.wheelEvent = self.scroll_event
 
         self._viewport.draw()
+
+    def scroll_event(self, a0: QWheelEvent | None) -> None:
+        """
+        Listen to mouse scrolling events to allow zoooming with the mouse
+
+        @param a0: The QWheelEvent object that will contain info about the scroll
+        """
+        if a0:
+            if (a0.angleDelta().y() > 0):
+                self.action_zoom_in()
+            elif (a0.angleDelta().y() < 0):
+                self.action_zoom_out()
+            else:
+                a0.ignore()
 
     def keyPressEvent(self, event: QKeyEvent | None) -> None:  # noqa: N802
         """
