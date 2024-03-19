@@ -8,8 +8,8 @@ class AboutDialog(QtWidgets.QDialog, Ui_Dialog):
     def __init__(self, *args, **kwargs) -> None:
         super(AboutDialog, self).__init__(*args, **kwargs)
         self.setupUi(self)
-        self.pushButton.clicked.connect(self.actionCloseButton)
+        self.pushButton.clicked.connect(self.action_close_button)
 
-    def actionCloseButton(self) -> None:
+    def action_close_button(self) -> None:
         """Close the window when clicking the close button"""
         self.close()

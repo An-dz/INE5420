@@ -4,7 +4,12 @@ from objects.geometricObject import Coordinate
 
 class Window:
     """The Window of the world"""
-    def __init__(self, display_file: DisplayFile, min_coord: Coordinate, max_coord: Coordinate) -> None:
+    def __init__(
+        self,
+        display_file: DisplayFile,
+        min_coord: Coordinate,
+        max_coord: Coordinate,
+    ) -> None:
         """
         Creates a window of the world
 
@@ -16,7 +21,7 @@ class Window:
         self._y_coordinates = [min_coord[1], max_coord[1]]
         self._display_file = display_file
 
-    def getVisibleObjects(self):
+    def get_visible_objects(self):
         """
         Returns the list of visible objects inside the window
 
@@ -26,7 +31,7 @@ class Window:
         """
         return self._display_file.objects()
 
-    def getXW(self, xw: float) -> float:
+    def get_xw(self, xw: float) -> float:
         """
         Returns a normalised X coordinate
 
@@ -37,7 +42,7 @@ class Window:
         (xw_min, xw_max) = self._x_coordinates
         return (xw - xw_min) / (xw_max - xw_min)
 
-    def getYW(self, yw: float) -> float:
+    def get_yw(self, yw: float) -> float:
         """
         Returns a normalised Y coordinate
 

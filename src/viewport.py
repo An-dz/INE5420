@@ -6,22 +6,22 @@ from window import Window
 
 class Viewport:
     """The viewport in the UI where the window is displayed"""
-    def __init__(self, window: Window, viewportCanvas: QLabel):
+    def __init__(self, window: Window, viewport_canvas: QLabel):
         """
         Creates the viewport
 
         @param window: The window this viewport will display
-        @param viewportCanvas: The QT object to manipulate the pixmap
+        @param viewport_canvas: The QT object to manipulate the pixmap
         """
         self._window = window
-        self._size = (viewportCanvas.width() - 2, viewportCanvas.height() -2)
+        self._size = (viewport_canvas.width() - 2, viewport_canvas.height() - 2)
         self._canvas = QtGui.QPixmap(self._size[0], self._size[1])
         drawing_color = QtGui.QColor(246, 158, 67)
         self._pen = QtGui.QPen(drawing_color)
         self._pen.setWidth(2)
-        self._viewportCanvas = viewportCanvas
+        self._viewport_canvas = viewport_canvas
 
-    def getCanvas(self) -> QtGui.QPixmap:
+    def get_canvas(self) -> QtGui.QPixmap:
         """
         Returns the pixmap object
 
@@ -29,47 +29,47 @@ class Viewport:
         """
         return self._canvas
 
-    def getViewportCanvas(self) -> QLabel:
+    def get_viewport_canvas(self) -> QLabel:
         """
         Returns the UI object
 
         @returns: UI object that the pixmap is being manipulated
         """
-        return self._viewportCanvas
+        return self._viewport_canvas
 
     def draw(self) -> None:
         """
         Redraws the viewport according to the window
         """
-        painter = QtGui.QPainter(self.getCanvas())
+        painter = QtGui.QPainter(self.get_canvas())
         painter.setRenderHints(QtGui.QPainter.RenderHint.Antialiasing)
         painter.setPen(self._pen)
         painter.setBackground(QtGui.QColor(61, 61, 61))
         painter.setBackgroundMode(Qt.BGMode.OpaqueMode)
-        painter.eraseRect(0,0,self._size[0],self._size[1])
-        objects = self._window.getVisibleObjects()
+        painter.eraseRect(0, 0, self._size[0], self._size[1])
+        objects = self._window.get_visible_objects()
         for obj in objects:
-            coords = iter(obj.getCoordinates())
+            coords = iter(obj.get_coordinates())
             last_point = next(coords)
-            if obj.getType() != "Point":
+            if obj.get_type() != "Point":
                 for cur_point in coords:
                     painter.drawLine(
                         QPointF(
-                            self._window.getXW(last_point[0]) * self._size[0],
-                            self._window.getYW(last_point[1]) * self._size[1]
+                            self._window.get_xw(last_point[0]) * self._size[0],
+                            self._window.get_yw(last_point[1]) * self._size[1],
                         ),
                         QPointF(
-                            self._window.getXW(cur_point[0]) * self._size[0],
-                            self._window.getYW(cur_point[1]) * self._size[1]
-                        )
+                            self._window.get_xw(cur_point[0]) * self._size[0],
+                            self._window.get_yw(cur_point[1]) * self._size[1],
+                        ),
                     )
                     last_point = cur_point
             else:
                 painter.drawPoint(
                     QPointF(
-                        self._window.getXW(last_point[0]) * self._size[0],
-                        self._window.getYW(last_point[1]) * self._size[1]
-                    )
+                        self._window.get_xw(last_point[0]) * self._size[0],
+                        self._window.get_yw(last_point[1]) * self._size[1],
+                    ),
                 )
         painter.end()
-        self.getViewportCanvas().setPixmap(self.getCanvas())
+        self.get_viewport_canvas().setPixmap(self.get_canvas())

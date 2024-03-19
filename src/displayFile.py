@@ -6,13 +6,13 @@ class DisplayFile:
     def __init__(self) -> None:
         self._objects: list[GeometricObject] = []
 
-    def add(self, object: GeometricObject) -> None:
+    def add(self, obj: GeometricObject) -> None:
         """
         Adds a geometric object into the display file
 
-        @param object: The geometric object to include into the world
+        @param obj: The geometric object to include into the world
         """
-        self._objects.append(object)
+        self._objects.append(obj)
 
     def remove(self, index: int) -> None:
         """

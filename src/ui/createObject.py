@@ -8,7 +8,12 @@ from ui.generated.createObject import Ui_CreateObjectDialog
 
 class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
     """The dialog box responsible for allowing the user to add objects into the world"""
-    def __init__(self, callback: Callable[[GeometricObject], None], *args, **kwargs) -> None:
+    def __init__(
+        self,
+        callback: Callable[[GeometricObject], None],
+        *args,
+        **kwargs,
+    ) -> None:
         """
         Creates the dialog
 
@@ -24,5 +29,5 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
         """
         name: str = self.nameInput.text()
         points: tuple[Coordinate, ...] = tuple(eval(self.coordinatesInput.text() + ","))
-        self._callback(Factory.createObject(name, points))
+        self._callback(Factory.create_object(name, points))
         self.close()

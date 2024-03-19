@@ -9,6 +9,6 @@
 # SML002: Too many false positives
 # S322: input is safe in Python3
 # T800: no spaces between parameter annotation and default value
-select = Q0
 ignore = E221,E241,E265,E266,E272,W503,SML002,S322,T800,W191,JS102
 inline-quotes = double
+max-line-length = 90
