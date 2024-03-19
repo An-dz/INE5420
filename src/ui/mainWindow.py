@@ -1,6 +1,9 @@
 from PyQt6 import QtWidgets, QtGui
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QKeyEvent, QKeySequence, QShortcut
+from displayFile import DisplayFile
+from objects.geometricObject import GeometricObject
+from ui.createObject import CreateObjectDialog
 from ui.generated.mainWindow import Ui_MainWindow
 from ui.about import AboutDialog
 from viewport import Viewport
@@ -11,6 +14,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
         # set actions
+        self.actionAdd_Object.triggered.connect(self.actionCreateObjectMenu)
         self.actionAbout.triggered.connect(self.actionAboutMenu)
         self.actionQuit.triggered.connect(self.actionQuitMenu)
         self.movementButtonDown.clicked.connect(self.actionMoveDown)
@@ -23,8 +27,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.keyboardZoomOut = QShortcut(QKeySequence("-"), self)
         self.keyboardZoomIn.activated.connect(self.actionZoomIn)
         self.keyboardZoomOut.activated.connect(self.actionZoomOut)
+        self.keyboardDeleteObject = QShortcut(QKeySequence("Del"), self)
+        self.keyboardDeleteObject.activated.connect(self.actionDeleteObject)
 
-        self._window_obj = Window((-100,-100), (100,100))
+        self._display_file = DisplayFile()
+        self._window_obj = Window(self._display_file, (-100,-100), (100,100))
         self._viewport = Viewport(self._window_obj, (self.graphicsView.height() - 2, self.graphicsView.width() - 2))
         self.graphicsView.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(61, 61, 61)))
         self.graphicsView.setScene(self._viewport.getScene())
@@ -47,6 +54,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     self.actionMoveRight()
                 elif event.key() == Qt.Key.Key_8:
                     self.actionMoveUp()
+
+    def actionDeleteObject(self) -> None:
+        obj_index = self.objectsList.currentRow()
+        if obj_index > -1 and obj_index < self.objectsList.count():
+            self.objectsList.takeItem(obj_index)
+            self._display_file.remove(obj_index)
+            self._viewport.draw()
 
     def actionMoveLeft(self) -> None:
         self._window_obj.move(-0.03, 0)
@@ -71,6 +85,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def actionZoomIn(self) -> None:
         self._window_obj.zoom(0.8)
         self._viewport.draw()
+
+    def actionCreateObject(self, obj: GeometricObject) -> None:
+        self._display_file.add(obj)
+        QtWidgets.QListWidgetItem("{} [{}]".format(obj.getName(), obj.getType()), self.objectsList)
+        self._viewport.draw()
+
+    def actionCreateObjectMenu(self) -> None:
+        dialog = CreateObjectDialog(callback=self.actionCreateObject)
+        dialog.exec()
 
     def actionAboutMenu(self) -> None:
         dialog = AboutDialog()
