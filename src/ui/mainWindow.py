@@ -1,6 +1,6 @@
-from PyQt6 import QtWidgets
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QKeyEvent, QKeySequence, QShortcut, QWheelEvent
+from PyQt6 import QtWidgets, QtCore
+from PyQt6.QtCore import QPointF, Qt
+from PyQt6.QtGui import QKeyEvent, QKeySequence, QMouseEvent, QShortcut, QWheelEvent
 from displayFile import DisplayFile
 from objects.geometricObject import GeometricObject
 from ui.createObject import CreateObjectDialog
@@ -35,11 +35,45 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self._display_file = DisplayFile()
         self._window_obj = Window(self._display_file, (-100, -100), (100, 100))
         self._viewport = Viewport(self._window_obj, self.viewportCanvas)
-        self.viewportCanvas.wheelEvent = self.scroll_event
+        self._mouse_coordinate: QPointF | None = None
+        self.viewportCanvas.wheelEvent = self.mouse_scroll_event
+        self.viewportCanvas.mouseMoveEvent = self.mouse_move_event
+        self.viewportCanvas.mousePressEvent = self.mouse_press_event
+        self.viewportCanvas.mouseReleaseEvent = self.mouse_release_event
 
         self._viewport.draw()
 
-    def scroll_event(self, a0: QWheelEvent | None) -> None:
+    @QtCore.pyqtSlot(QtCore.QPoint)
+    def mouse_move_event(self, ev: QMouseEvent | None) -> None:
+        if ev and self._mouse_coordinate is not None:
+            delta = self._mouse_coordinate - ev.position()
+            print("Move {}".format(delta))
+            self._window_obj.pan(delta.x() / (self.viewportCanvas.width() - 2), delta.y() / (self.viewportCanvas.height() - 2))
+            self._viewport.draw()
+            self._mouse_coordinate = ev.position()
+
+    @QtCore.pyqtSlot(QtCore.QPoint)
+    def mouse_release_event(self, ev: QMouseEvent | None) -> None:
+        if ev and ev.button() == Qt.MouseButton.MiddleButton:
+            print("Release {}".format(self._mouse_coordinate))
+            self._mouse_coordinate = None
+
+    @QtCore.pyqtSlot(QtCore.QPoint)
+    def mouse_press_event(self, ev: QMouseEvent | None) -> None:
+        if (
+            ev
+            and ev.button() == Qt.MouseButton.MiddleButton
+            and ev.modifiers() & Qt.KeyboardModifier.ShiftModifier
+        ):
+            self._mouse_coordinate = ev.position()
+            print("Press {}".format(self._mouse_coordinate))
+        # delta = QtCore.QPoint(30, -15)
+        # self.label_position.show()
+        # self.label_position.move(pos + delta)
+        # self.label_position.setText("(%d, %d)" % (pos.x(), pos.y()))
+        # self.label_position.adjustSize()
+
+    def mouse_scroll_event(self, a0: QWheelEvent | None) -> None:
         """
         Listen to mouse scrolling events to allow zoooming with the mouse
 
