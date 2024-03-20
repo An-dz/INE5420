@@ -48,7 +48,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if ev and self._mouse_coordinate is not None:
             delta = self._mouse_coordinate - ev.position()
             print("Move {}".format(delta))
-            self._window_obj.pan(delta.x() / (self.viewportCanvas.width() - 2), delta.y() / (self.viewportCanvas.height() - 2))
+            self._window_obj.pan(
+                delta.x() / (self.viewportCanvas.width() - 2),
+                delta.y() / (self.viewportCanvas.height() - 2),
+            )
             self._viewport.draw()
             self._mouse_coordinate = ev.position()
 
