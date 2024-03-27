@@ -16,9 +16,6 @@ class Viewport:
         self._window = window
         self._size = (viewport_canvas.width() - 2, viewport_canvas.height() - 2)
         self._canvas = QtGui.QPixmap(self._size[0], self._size[1])
-        drawing_color = QtGui.QColor(246, 158, 67)
-        self._pen = QtGui.QPen(drawing_color)
-        self._pen.setWidth(2)
         self._viewport_canvas = viewport_canvas
 
     def get_canvas(self) -> QtGui.QPixmap:
@@ -43,12 +40,15 @@ class Viewport:
         """
         painter = QtGui.QPainter(self.get_canvas())
         painter.setRenderHints(QtGui.QPainter.RenderHint.Antialiasing)
-        painter.setPen(self._pen)
         painter.setBackground(QtGui.QColor(61, 61, 61))
         painter.setBackgroundMode(Qt.BGMode.OpaqueMode)
         painter.eraseRect(0, 0, self._size[0], self._size[1])
         objects = self._window.get_visible_objects()
         for obj in objects:
+            drawing_color = QtGui.QColor(*obj.get_colour())
+            pen = QtGui.QPen(drawing_color)
+            pen.setWidth(2)
+            painter.setPen(pen)
             coords = iter(obj.get_coordinates())
             last_point = next(coords)
             if obj.get_type() != "Point":

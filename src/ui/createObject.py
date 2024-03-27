@@ -1,5 +1,5 @@
 from typing import Callable
-from PyQt6 import QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 from objects.factory import Factory
 from objects.geometricObject import Coordinate, GeometricObject
 
@@ -23,11 +23,39 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
         self._callback = callback
         self.setupUi(self)
 
+        re = QtCore.QRegularExpression(
+            "(\\(-?\\d*(\\.\\d*)?\\s*,\\s*-?\\d*(\\.\\d*)?\\),)*\\(-?\\d*(\\.\\d*)?\\s*,\\s*-?\\d*(\\.\\d*)?\\)",  # noqa: E501
+        )
+        self.inputCoordinates.setValidator(QtGui.QRegularExpressionValidator(re))
+        re = QtCore.QRegularExpression("#[0-9a-fA-F]{6}")
+        self.inputColour.setValidator(QtGui.QRegularExpressionValidator(re))
+
     def accept(self) -> None:
         """
         Event fired when the dialog is accepted
         """
-        name: str = self.nameInput.text()
-        points: tuple[Coordinate, ...] = tuple(eval(self.coordinatesInput.text() + ","))
-        self._callback(Factory.create_object(name, points))
-        self.close()
+        name: str = self.inputName.text()
+        colour: tuple[int, int, int] = (0, 0, 0)
+        colour_hex = self.inputColour.text()
+
+        if len(colour_hex) == 4:
+            colour = (
+                int(colour_hex[1] * 2, 16),
+                int(colour_hex[2] * 2, 16),
+                int(colour_hex[3] * 2, 16),
+            )
+        elif len(colour_hex) == 7:
+            colour = (
+                int(colour_hex[1:3], 16),
+                int(colour_hex[3:5], 16),
+                int(colour_hex[5:7], 16),
+            )
+
+        try:
+            points: tuple[Coordinate, ...] = tuple(
+                eval(self.inputCoordinates.text() + ","),
+            )
+            self._callback(Factory.create_object(name, colour, points))
+            self.close()
+        except Exception:
+            return
