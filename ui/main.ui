@@ -357,7 +357,17 @@
     <property name="title">
      <string>Edit</string>
     </property>
+    <widget class="QMenu" name="menuTransform">
+     <property name="title">
+      <string>Transform</string>
+     </property>
+     <addaction name="actionTranslate"/>
+     <addaction name="actionScale"/>
+     <addaction name="actionRotate"/>
+    </widget>
     <addaction name="actionAdd_Object"/>
+    <addaction name="separator"/>
+    <addaction name="menuTransform"/>
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
@@ -392,6 +402,21 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionTranslate">
+   <property name="text">
+    <string>Translate</string>
+   </property>
+  </action>
+  <action name="actionScale">
+   <property name="text">
+    <string>Scale</string>
+   </property>
+  </action>
+  <action name="actionRotate">
+   <property name="text">
+    <string>Rotate</string>
    </property>
   </action>
  </widget>

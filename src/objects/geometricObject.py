@@ -1,3 +1,6 @@
+import numpy as np
+from numpy.typing import NDArray
+
 Coordinate = tuple[float, float]
 """Coordinate in 2D plane"""
 
@@ -55,4 +58,17 @@ class GeometricObject:
 
         @returns: Tuple of coordinates for each point
         """
-        return self._coordinates
+        return tuple(self._coordinates)
+
+    def get_center(self) -> NDArray[np.float64]:
+        """
+        Returns the center point of the object
+
+        @returns: Coordinates of the center
+        """
+        return np.sum(self._coordinates, axis=0) / len(self._coordinates)
+
+    def transform(self, transform_matrix: NDArray[np.float64]):
+        self._coordinates = np.array(
+            [*map(lambda x: x @ transform_matrix, self._coordinates)],  # noqa: C417
+        )

@@ -6,6 +6,9 @@ class DisplayFile:
     def __init__(self) -> None:
         self._objects: list[GeometricObject] = []
 
+    def at(self, index: int) -> GeometricObject:
+        return self._objects[index]
+
     def add(self, obj: GeometricObject) -> None:
         """
         Adds a geometric object into the display file
