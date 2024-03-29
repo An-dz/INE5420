@@ -60,7 +60,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.action_create_object(Line("test", (246, 158, 67), (-33, -33), (66, 66)))
 
     def context_menu_event(self, click_position: QtCore.QPoint) -> None:
-        print(click_position)
         menu = QtWidgets.QMenu()
         menu.addAction(self.actionAdd_Object)
         item = self.objectsList.itemAt(click_position)
@@ -68,9 +67,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             action_transform = menu.addAction("Transform")
             if action_transform:
                 action_transform.triggered.connect(self.action_window_transform_object_translate)
+                action_transform.setShortcut("N")
             action_delete = menu.addAction("Delete")
             if action_delete:
                 action_delete.triggered.connect(self.action_delete_object)
+                action_delete.setShortcut("Del")
         action = menu.exec(self.objectsList.mapToGlobal(click_position))
 
     @QtCore.pyqtSlot(QtCore.QPoint)
