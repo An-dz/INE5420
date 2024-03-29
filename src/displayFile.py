@@ -7,6 +7,13 @@ class DisplayFile:
         self._objects: list[GeometricObject] = []
 
     def at(self, index: int) -> GeometricObject:
+        """
+        Return the object at the requested index
+
+        @param index: Index of the object in the display file list
+
+        @returns: Geometric object in display file at provided index
+        """
         return self._objects[index]
 
     def add(self, obj: GeometricObject) -> None:

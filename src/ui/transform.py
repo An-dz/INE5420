@@ -11,12 +11,13 @@ from ui.generated.transform import Ui_TransformDialog
 
 
 class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
+    """Dialog for transforming an object"""
     class Tab(IntEnum):
+        """Enum to control which tab to start on open"""
         Translate = 0
         Scale = 1
         Rotate = 2
 
-    """A simple about screen just to show who made this"""
     def __init__(
         self,
         geometric_obj: GeometricObject,
@@ -24,6 +25,12 @@ class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
         *args,
         **kwargs,
     ) -> None:
+        """
+        Opens the dialog on the defined tab
+
+        @param geometric_obj: Object being transformed
+        @param tab: Which tab to start with on open
+        """
         super(TransformDialog, self).__init__(*args, **kwargs)
         self.setupUi(self)
         self.checkBoxScaleAspect.stateChanged.connect(self.event_scale_aspect_changed)
@@ -63,32 +70,66 @@ class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
         self.close()
 
     def event_scale_aspect_changed(self, checked: int) -> None:
+        """
+        Event fired when the aspect ratio checkbox is checked on scale tab
+
+        @param checked: new state of the checkbox
+        """
         self.inputScaleSy.setEnabled(checked == 0)
         self.label_scaleSy.setEnabled(checked == 0)
+        # if itś checked we set Y scale equal to X
         if checked > 0:
             self.inputScaleSy.setText(self.inputScaleSx.text())
 
     def event_scale_x_changed(self, text: str) -> None:
+        """
+        Event fired when a value is entered for X scale
+
+        @param text: new value for X scaling
+        """
+        # if the aspect ratio is checked we keep both X & Y equal
         if self.checkBoxScaleAspect.checkState() == Qt.CheckState.Checked:
             self.inputScaleSy.setText(text)
 
     def event_rotate_center_toggled(self, state: bool) -> None:
+        """
+        Event fired when rotate around object center is toggled
+
+        @param state: whether the radio box was selected or not
+        """
+        # if is's toggled on we set the origin on the object's center
         if state:
             self.inputRotationPointX.setText(str(self._obj_center[0]))
             self.inputRotationPointY.setText(str(self._obj_center[1]))
 
     def event_rotate_origin_toggled(self, state: bool) -> None:
+        """
+        Event fired when rotate around origin is toggled
+
+        @param state: whether the radio box was selected or not
+        """
+        # if is's toggled on we set the origin on 0,0
         if state:
             self.inputRotationPointX.setText(None)
             self.inputRotationPointY.setText(None)
 
     def event_rotate_point_toggled(self, state: bool) -> None:
+        """
+        Event fired when rotate around custom point is toggled
+
+        @param state: whether the radio box was selected or not
+        """
         self.groupBoxRotationPoint.setEnabled(state)
+        # if is's toggled on we set the origin on 0,0
         if state:
             self.inputRotationPointX.setText(None)
             self.inputRotationPointY.setText(None)
 
     def event_transformation_add(self) -> None:
+        """
+        Event fired when clicking the Add button
+        """
+        # we check the tab to know what type of transformation to add
         current_tab = self.tabWidgetTransformations.currentIndex()
         if current_tab == 0:
             dx = 0.0
@@ -151,6 +192,9 @@ class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
             )
 
     def event_transformation_remove(self) -> None:
+        """
+        Event fired when clicking the Delete button
+        """
         obj_index = self.listTransformations.currentRow()
         if obj_index > -1 and obj_index < self.listTransformations.count():
             self.listTransformations.takeItem(obj_index)
