@@ -1,6 +1,6 @@
 from PyQt6 import QtWidgets
 
-from ui.generated.about import Ui_Dialog
+from ui.generated.aboutDialog import Ui_Dialog
 
 
 class AboutDialog(QtWidgets.QDialog, Ui_Dialog):

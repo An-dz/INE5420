@@ -7,7 +7,7 @@ from numpy.typing import NDArray
 from objects.geometricObject import GeometricObject
 import transformation as transform
 
-from ui.generated.transform import Ui_TransformDialog
+from ui.generated.transformDialog import Ui_TransformDialog
 
 
 class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):

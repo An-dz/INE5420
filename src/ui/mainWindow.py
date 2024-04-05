@@ -2,10 +2,10 @@ from PyQt6 import QtWidgets, QtCore, QtGui
 from PyQt6.QtCore import Qt
 from displayFile import DisplayFile
 from objects.geometricObject import GeometricObject
-from ui.createObject import CreateObjectDialog
+from ui.createObjectDialog import CreateObjectDialog
 from ui.generated.mainWindow import Ui_MainWindow
-from ui.about import AboutDialog
-from ui.transform import TransformDialog
+from ui.aboutDialog import AboutDialog
+from ui.transformDialog import TransformDialog
 from viewport import Viewport
 from window import Window
 from objects.line import Line
