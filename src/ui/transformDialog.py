@@ -4,10 +4,11 @@ from PyQt6 import QtCore
 from PyQt6.QtCore import Qt
 import numpy as np
 from numpy.typing import NDArray
+
 from objects.geometricObject import GeometricObject
 import transformation as transform
-
 from ui.generated.transformDialog import Ui_TransformDialog
+from window import Window
 
 
 class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
@@ -21,6 +22,7 @@ class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
     def __init__(
         self,
         geometric_obj: GeometricObject,
+        window: Window,
         tab: Tab = Tab.Translate,
         *args,
         **kwargs,
@@ -50,6 +52,7 @@ class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
         self.inputRotationPointY.setValidator(QtGui.QRegularExpressionValidator(re))
         self.tabWidgetTransformations.setCurrentIndex(tab)
 
+        self._window = window
         self._geometric_obj = geometric_obj
         self._obj_center = self._geometric_obj.get_center()
         self._transform_list: list[NDArray[np.float64]] = []
@@ -63,10 +66,10 @@ class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
         """
         if len(self._transform_list) == 1:
             transform_matrix = self._transform_list[0]
-            self._geometric_obj.transform(transform_matrix)
+            self._geometric_obj.transform(transform_matrix, self._window.get_scn_matrix())
         elif len(self._transform_list) > 1:
             transform_matrix = np.linalg.multi_dot(self._transform_list)
-            self._geometric_obj.transform(transform_matrix)
+            self._geometric_obj.transform(transform_matrix, self._window.get_scn_matrix())
         self.close()
 
     def event_scale_aspect_changed(self, checked: int) -> None:

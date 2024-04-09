@@ -1,5 +1,8 @@
+import numpy as np
+from numpy.typing import NDArray
 from displayFile import DisplayFile
 from objects.geometricObject import Coordinate
+from transformation import rotate_matrix, scale_matrix, translate
 
 
 class Window:
@@ -7,8 +10,8 @@ class Window:
     def __init__(
         self,
         display_file: DisplayFile,
-        min_coord: Coordinate,
-        max_coord: Coordinate,
+        center: Coordinate,
+        size: Coordinate,
     ) -> None:
         """
         Creates a window of the world
@@ -17,9 +20,11 @@ class Window:
         @param min_coord: The initial small coordinates of the world rectangle
         @param max_coord: The initial large coordinates of the world rectangle
         """
-        self._x_coordinates = [min_coord[0], max_coord[0]]
-        self._y_coordinates = [min_coord[1], max_coord[1]]
+        self._wcenter = center
+        self._size = size
         self._display_file = display_file
+        self._angle: float = 0.
+        self.update_scn_matrix()
 
     def get_visible_objects(self):
         """
@@ -39,8 +44,7 @@ class Window:
 
         @returns: Point normalised to the window position
         """
-        (xw_min, xw_max) = self._x_coordinates
-        return (xw - xw_min) / (xw_max - xw_min)
+        return (xw + 1) / 2
 
     def get_yw(self, yw: float) -> float:
         """
@@ -50,8 +54,31 @@ class Window:
 
         @returns: Point normalised to the window position
         """
-        (yw_min, yw_max) = self._y_coordinates
-        return 1 - ((yw - yw_min) / (yw_max - yw_min))
+        return 1 - ((yw + 1) / 2)
+
+    def get_scn_matrix(self) -> NDArray[np.float64]:
+        """
+        Generates the SCN transformation matrix for the current params
+
+        @returns: SCN transformation matrix as numpy array
+        """
+        return translate(
+            -self._wcenter[0],
+            -self._wcenter[1],
+        ) @ rotate_matrix(
+            self._angle * np.pi / 180,
+        ) @ scale_matrix(
+            1 / (self._size[0] / 2),
+            1 / (self._size[1] / 2),
+        )
+
+    def update_scn_matrix(self) -> None:
+        """
+        Updates the SCN transformation matrix for the current params
+        """
+        self._display_file.set_scn_matrix(
+            self.get_scn_matrix(),
+        )
 
     def move(self, times_dx: float, times_dy: float) -> None:
         """
@@ -62,28 +89,35 @@ class Window:
         @param times_dx: Percentage of the axis length to move
         @param times_dy: Percentage of the axis length to move
         """
-        amount_x = (self._x_coordinates[1] - self._x_coordinates[0]) * times_dx
-        amount_y = (self._y_coordinates[1] - self._y_coordinates[0]) * times_dy
-        self._x_coordinates[0] += amount_x
-        self._x_coordinates[1] += amount_x
-        self._y_coordinates[0] += amount_y
-        self._y_coordinates[1] += amount_y
+        amount = np.array(
+            [
+                self._size[0] * times_dx,
+                self._size[1] * times_dy,
+                1,
+            ] @ rotate_matrix(-self._angle * np.pi / 180),
+        )
+        self._wcenter = (self._wcenter[0] + amount[0], self._wcenter[1] + amount[1])
+        self.update_scn_matrix()
 
     def pan(self, dx: float, dy: float) -> None:
         """
         Moves the window around
 
-        @note This uses a percentage style so movement is consistent no matter the zoom
+        @note This uses a pixel style but adjusts with the window size
+              so movement with mouse is smooth
 
-        @param times_dx: Percentage of the axis length to move
-        @param times_dy: Percentage of the axis length to move
+        @param dx: amount in the X axis the mouse moved
+        @param dy: amount in the Y axis the mouse moved
         """
-        width = self._x_coordinates[1] - self._x_coordinates[0]
-        height = self._y_coordinates[1] - self._y_coordinates[0]
-        self._x_coordinates[0] += (dx * width)
-        self._x_coordinates[1] += (dx * width)
-        self._y_coordinates[0] += (-dy * height)
-        self._y_coordinates[1] += (-dy * height)
+        amount = np.array(
+            [
+                dx * self._size[0],
+                -dy * self._size[1],
+                1,
+            ] @ rotate_matrix(-self._angle * np.pi / 180),
+        )
+        self._wcenter = (self._wcenter[0] + amount[0], self._wcenter[1] + amount[1])
+        self.update_scn_matrix()
 
     def zoom(self, times: float) -> None:
         """
@@ -91,7 +125,17 @@ class Window:
 
         @param times: How many times the sizes should be adjusted
         """
-        self._x_coordinates[0] *= times
-        self._x_coordinates[1] *= times
-        self._y_coordinates[0] *= times
-        self._y_coordinates[1] *= times
+        self._size = (self._size[0] * times, self._size[1] * times)
+        self.update_scn_matrix()
+
+    def rotate(self, angle: float) -> None:
+        """
+        Rotates the window in the world
+
+        @param angle: Angle in degrees to rotate the world around the window center
+        """
+        if angle != 0:
+            self._angle = (self._angle + angle) % 360
+        else:
+            self._angle = 0
+        self.update_scn_matrix()
