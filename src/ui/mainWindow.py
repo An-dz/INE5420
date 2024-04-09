@@ -63,6 +63,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self._window_obj = Window(self._display_file, (0, 0), (200, 200))
         self._viewport = Viewport(self._window_obj, self.viewportCanvas)
         self._mouse_coordinate: QtCore.QPointF | None = None
+        self._mouse_modifiers: Qt.KeyboardModifier = Qt.KeyboardModifier.NoModifier
         self.viewportCanvas.wheelEvent = self.mouse_scroll_event
         self.viewportCanvas.mouseMoveEvent = self.mouse_move_event
         self.viewportCanvas.mousePressEvent = self.mouse_press_event
@@ -106,11 +107,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         if ev and self._mouse_coordinate is not None:
             delta = self._mouse_coordinate - ev.position()
-            self._window_obj.pan(
-                delta.x() / (self.viewportCanvas.width() - 2),
-                delta.y() / (self.viewportCanvas.height() - 2),
-            )
-            self._viewport.draw()
+            if self._mouse_modifiers & Qt.KeyboardModifier.ShiftModifier:
+                self._window_obj.pan(
+                    delta.x() / (self.viewportCanvas.width() - 2),
+                    delta.y() / (self.viewportCanvas.height() - 2),
+                )
+            elif self._mouse_modifiers & Qt.KeyboardModifier.ControlModifier:
+                self._window_obj.zoom(
+                    1 - (2 * delta.y() / (self.viewportCanvas.height() - 2)),
+                )
+            self._viewport.draw(self.objectsList.currentRow())
             self._mouse_coordinate = ev.position()
 
     @QtCore.pyqtSlot(QtCore.QPoint)
@@ -137,9 +143,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if (
             ev
             and ev.button() == Qt.MouseButton.MiddleButton
-            and ev.modifiers() & Qt.KeyboardModifier.ShiftModifier
         ):
-            self._mouse_coordinate = ev.position()
+            self._mouse_modifiers = ev.modifiers()
+            if (
+                self._mouse_modifiers & Qt.KeyboardModifier.ShiftModifier
+                or self._mouse_modifiers & Qt.KeyboardModifier.ControlModifier
+            ):
+                self._mouse_coordinate = ev.position()
 
     def mouse_scroll_event(self, a0: QtGui.QWheelEvent | None) -> None:
         """
