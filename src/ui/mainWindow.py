@@ -92,13 +92,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             menu.addSeparator()
             action_transform = menu.addAction("Transform")
             if action_transform:
-                action_transform.triggered.connect(self.action_window_transform_object_translate)
+                action_transform.triggered.connect(
+                    self.action_window_transform_object_translate,
+                )
                 action_transform.setShortcut("N")
             action_delete = menu.addAction("Delete")
             if action_delete:
                 action_delete.triggered.connect(self.action_delete_object)
                 action_delete.setShortcut("Del")
-        action = menu.exec(self.objectsList.mapToGlobal(click_position))
+        menu.exec(self.objectsList.mapToGlobal(click_position))
 
     @QtCore.pyqtSlot(QtCore.QPoint)
     def mouse_move_event(self, ev: QtGui.QMouseEvent | None) -> None:
