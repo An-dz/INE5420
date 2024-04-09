@@ -1,7 +1,7 @@
 from typing import Callable
 from PyQt6 import QtCore, QtGui, QtWidgets
 from objects.factory import Factory
-from objects.geometricObject import Coordinate, GeometricObject
+from objects.geometricObject import Colour, Coordinate, GeometricObject
 
 from ui.generated.createObjectDialog import Ui_CreateObjectDialog
 
@@ -35,7 +35,7 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
         Event fired when the dialog is accepted
         """
         name: str = self.inputName.text()
-        colour: tuple[int, int, int] = (0, 0, 0)
+        colour: Colour = (0, 0, 0)
         colour_hex = self.inputColour.text()
 
         if len(colour_hex) == 4:

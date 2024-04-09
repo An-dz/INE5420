@@ -3,6 +3,8 @@ from numpy.typing import NDArray
 
 Coordinate = tuple[float, float]
 """Coordinate in 2D plane"""
+Colour = tuple[int, int, int]
+"""A RGB colour tuple, each value goes from 0 to 255"""
 
 
 class GeometricObject:
@@ -11,7 +13,7 @@ class GeometricObject:
         self,
         name: str,
         obj_type: str,
-        colour: tuple[int, int, int],
+        colour: Colour,
         coordinates: tuple[Coordinate, ...],
     ) -> None:
         """
@@ -50,7 +52,7 @@ class GeometricObject:
         """
         return self._name
 
-    def get_colour(self) -> tuple[int, int, int]:
+    def get_colour(self) -> Colour:
         """
         Returns the colour that was set for this object to be painted
 

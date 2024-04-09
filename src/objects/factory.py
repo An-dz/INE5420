@@ -1,4 +1,4 @@
-from objects.geometricObject import Coordinate, GeometricObject
+from objects.geometricObject import Colour, Coordinate, GeometricObject
 from objects.line import Line
 from objects.point import Point
 from objects.wireframe import Wireframe
@@ -9,7 +9,7 @@ class Factory:
     @staticmethod
     def create_object(
         name: str,
-        colour: tuple[int, int, int],
+        colour: Colour,
         points: tuple[Coordinate, ...],
     ) -> GeometricObject:
         """
