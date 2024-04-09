@@ -376,6 +376,21 @@
     <property name="title">
      <string>File</string>
     </property>
+    <widget class="QMenu" name="menuImport">
+     <property name="title">
+      <string>Import</string>
+     </property>
+     <addaction name="actionWavefrontImport"/>
+    </widget>
+    <widget class="QMenu" name="menuExport">
+     <property name="title">
+      <string>Export</string>
+     </property>
+     <addaction name="actionWavefrontExport"/>
+    </widget>
+    <addaction name="menuImport"/>
+    <addaction name="menuExport"/>
+    <addaction name="separator"/>
     <addaction name="actionQuit"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
@@ -420,6 +435,16 @@
   <action name="actionRotate">
    <property name="text">
     <string>Rotate</string>
+   </property>
+  </action>
+  <action name="actionWavefrontImport">
+   <property name="text">
+    <string>Wavefront (.obj)</string>
+   </property>
+  </action>
+  <action name="actionWavefrontExport">
+   <property name="text">
+    <string>Wavefront (.obj)</string>
    </property>
   </action>
  </widget>

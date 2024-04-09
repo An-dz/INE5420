@@ -1,4 +1,4 @@
-from objects.geometricObject import Colour, Coordinate, GeometricObject
+from objects.geometricObject import Colour, NormalCoordinate, GeometricObject
 
 
 class Wireframe(GeometricObject):
@@ -7,7 +7,7 @@ class Wireframe(GeometricObject):
         self,
         name: str,
         colour: Colour,
-        points: tuple[Coordinate, ...],
+        points: list[tuple[NormalCoordinate, NormalCoordinate]],
     ) -> None:
         """
         Creates a Wireframe object
@@ -18,7 +18,7 @@ class Wireframe(GeometricObject):
         @param colour: A colour to draw the object
         @param points: A tuple of Coordinate tuples
         """
-        if len(points) < 3:
+        if len(points) < 2:
             raise ValueError("Wireframe requires more than 2 points")
 
         super(Wireframe, self).__init__(name, "Wireframe", colour, points)

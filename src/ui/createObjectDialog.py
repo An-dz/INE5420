@@ -1,7 +1,7 @@
 from typing import Callable
 from PyQt6 import QtCore, QtGui, QtWidgets
 from objects.factory import Factory
-from objects.geometricObject import Colour, Coordinate, GeometricObject
+from objects.geometricObject import Colour, Coordinate, GeometricObject, NormalCoordinate
 
 from ui.generated.createObjectDialog import Ui_CreateObjectDialog
 
@@ -55,7 +55,18 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
             points: tuple[Coordinate, ...] = tuple(
                 eval(self.inputCoordinates.text() + ","),
             )
-            self._callback(Factory.create_object(name, colour, points))
+            coords: list[tuple[NormalCoordinate, NormalCoordinate]] = []
+
+            if len(points) == 1:
+                coords = [((*points[0], 1), (*points[0], 1))]
+            else:
+                points_iter = iter(points)
+                last_point = next(points_iter)
+                for point in points_iter:
+                    coords.append(((*last_point, 1), (*point, 1)))
+                    last_point = point
+
+            self._callback(Factory.create_object(name, colour, coords))
             self.close()
         except Exception:
             return

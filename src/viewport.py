@@ -49,26 +49,25 @@ class Viewport:
             pen = QtGui.QPen(drawing_color)
             pen.setWidth(2)
             painter.setPen(pen)
-            coords = iter(obj.get_coordinates())
-            last_point = next(coords)
+            coords = obj.get_window_coordinates()
+
             if obj.get_type() != "Point":
-                for cur_point in coords:
+                for line in coords:
                     painter.drawLine(
                         QPointF(
-                            self._window.get_xw(last_point[0]) * self._size[0],
-                            self._window.get_yw(last_point[1]) * self._size[1],
+                            self._window.get_xw(line[0][0]) * self._size[0],
+                            self._window.get_yw(line[0][1]) * self._size[1],
                         ),
                         QPointF(
-                            self._window.get_xw(cur_point[0]) * self._size[0],
-                            self._window.get_yw(cur_point[1]) * self._size[1],
+                            self._window.get_xw(line[1][0]) * self._size[0],
+                            self._window.get_yw(line[1][1]) * self._size[1],
                         ),
                     )
-                    last_point = cur_point
             else:
                 painter.drawPoint(
                     QPointF(
-                        self._window.get_xw(last_point[0]) * self._size[0],
-                        self._window.get_yw(last_point[1]) * self._size[1],
+                        self._window.get_xw(coords[0][0][0]) * self._size[0],
+                        self._window.get_yw(coords[0][0][1]) * self._size[1],
                     ),
                 )
         painter.end()
