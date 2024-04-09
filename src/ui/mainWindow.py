@@ -73,7 +73,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.viewportCanvas.mousePressEvent = self.mouse_press_event
         self.viewportCanvas.mouseReleaseEvent = self.mouse_release_event
 
-        self._viewport.draw()
+        self._viewport.draw(-1)
+
+        self.objectsList.currentRowChanged.connect(lambda row: self._viewport.draw(row))
 
     def context_menu_event(self, click_position: QtCore.QPoint) -> None:
         """
@@ -197,49 +199,49 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if obj_index > -1 and obj_index < self.objectsList.count():
             self.objectsList.takeItem(obj_index)
             self._display_file.remove(obj_index)
-            self._viewport.draw()
+            self._viewport.draw(self.objectsList.currentRow())
 
     def action_move_left(self) -> None:
         """
         Click on move left button
         """
         self._window_obj.move(-0.03, 0)
-        self._viewport.draw()
+        self._viewport.draw(self.objectsList.currentRow())
 
     def action_move_right(self) -> None:
         """
         Click on move right button
         """
         self._window_obj.move(0.03, 0)
-        self._viewport.draw()
+        self._viewport.draw(self.objectsList.currentRow())
 
     def action_move_up(self) -> None:
         """
         Click on move up button
         """
         self._window_obj.move(0, 0.03)
-        self._viewport.draw()
+        self._viewport.draw(self.objectsList.currentRow())
 
     def action_move_down(self) -> None:
         """
         Click on move down button
         """
         self._window_obj.move(0, -0.03)
-        self._viewport.draw()
+        self._viewport.draw(self.objectsList.currentRow())
 
     def action_zoom_out(self) -> None:
         """
         Click on zoom out button
         """
         self._window_obj.zoom(1.25)
-        self._viewport.draw()
+        self._viewport.draw(self.objectsList.currentRow())
 
     def action_zoom_in(self) -> None:
         """
         Click on zoom in button
         """
         self._window_obj.zoom(0.8)
-        self._viewport.draw()
+        self._viewport.draw(self.objectsList.currentRow())
 
     def action_rotate_clockwise(self) -> None:
         """
@@ -250,7 +252,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         try:
             angle = float(self.rotationAngleField.text())
             self._window_obj.rotate(angle)
-            self._viewport.draw()
+            self._viewport.draw(self.objectsList.currentRow())
         except Exception:
             pass
 
@@ -263,7 +265,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         try:
             angle = -float(self.rotationAngleField.text())
             self._window_obj.rotate(angle)
-            self._viewport.draw()
+            self._viewport.draw(self.objectsList.currentRow())
         except Exception:
             pass
 
@@ -272,7 +274,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         Resets the rotation back to Y and V being aligned
         """
         self._window_obj.rotate(0)
-        self._viewport.draw()
+        self._viewport.draw(self.objectsList.currentRow())
 
     def action_create_object(self, obj: GeometricObject) -> None:
         """
@@ -288,7 +290,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             "{} [{}]".format(obj.get_name(), obj.get_type()),
             self.objectsList,
         )
-        self._viewport.draw()
+        self._viewport.draw(self.objectsList.currentRow())
 
     def action_window_transform_object_translate(self) -> None:
         """
@@ -319,7 +321,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             obj = self._display_file.at(obj_index)
             dialog = TransformDialog(geometric_obj=obj, window=self._window_obj, tab=tab)
             dialog.exec()
-            self._viewport.draw()
+            self._viewport.draw(self.objectsList.currentRow())
 
     def action_import_obj(self) -> None:
         """
