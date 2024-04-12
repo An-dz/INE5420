@@ -1,4 +1,4 @@
-from objects.geometricObject import Colour, NormalCoordinate, GeometricObject
+from objects.geometricObject import Colour, GeometricObject, NormalCoordinate
 from objects.line import Line
 from objects.point import Point
 from objects.wireframe import Wireframe

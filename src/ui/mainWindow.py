@@ -1,5 +1,6 @@
-from PyQt6 import QtWidgets, QtCore, QtGui
+from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import Qt
+
 from displayFile import DisplayFile
 from io_files.wavefront_obj import WavefrontDescriptor
 from objects.geometricObject import GeometricObject

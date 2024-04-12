@@ -1,4 +1,4 @@
-from objects.geometricObject import Colour, NormalCoordinate, GeometricObject
+from objects.geometricObject import Colour, GeometricObject, NormalCoordinate
 
 
 class Wireframe(GeometricObject):

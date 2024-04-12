@@ -1,8 +1,9 @@
 from typing import Callable
+
 from PyQt6 import QtCore, QtGui, QtWidgets
+
 from objects.factory import Factory
 from objects.geometricObject import Colour, Coordinate, GeometricObject, NormalCoordinate
-
 from ui.generated.createObjectDialog import Ui_CreateObjectDialog
 
 

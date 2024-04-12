@@ -1,12 +1,11 @@
-from PyQt6 import QtGui
-from PyQt6.QtCore import QPointF, Qt
-from PyQt6.QtWidgets import QLabel
+from PyQt6 import QtCore, QtGui, QtWidgets
+
 from window import Window
 
 
 class Viewport:
     """The viewport in the UI where the window is displayed"""
-    def __init__(self, window: Window, viewport_canvas: QLabel):
+    def __init__(self, window: Window, viewport_canvas: QtWidgets.QLabel):
         """
         Creates the viewport
 
@@ -27,7 +26,7 @@ class Viewport:
         """
         return self._canvas
 
-    def get_viewport_canvas(self) -> QLabel:
+    def get_viewport_canvas(self) -> QtWidgets.QLabel:
         """
         Returns the UI object
 
@@ -42,7 +41,7 @@ class Viewport:
         painter = QtGui.QPainter(self.get_canvas())
         painter.setRenderHints(QtGui.QPainter.RenderHint.Antialiasing)
         painter.setBackground(QtGui.QColor(61, 61, 61))
-        painter.setBackgroundMode(Qt.BGMode.OpaqueMode)
+        painter.setBackgroundMode(QtCore.Qt.BGMode.OpaqueMode)
         painter.eraseRect(0, 0, self._size[0], self._size[1])
         objects = self._window.get_visible_objects()
 
@@ -59,18 +58,18 @@ class Viewport:
             if obj.get_type() != "Point":
                 for line in coords:
                     painter.drawLine(
-                        QPointF(
+                        QtCore.QPointF(
                             self._window.get_xw(line[0][0]) * self._size[0],
                             self._window.get_yw(line[0][1]) * self._size[1],
                         ),
-                        QPointF(
+                        QtCore.QPointF(
                             self._window.get_xw(line[1][0]) * self._size[0],
                             self._window.get_yw(line[1][1]) * self._size[1],
                         ),
                     )
             else:
                 painter.drawPoint(
-                    QPointF(
+                    QtCore.QPointF(
                         self._window.get_xw(coords[0][0][0]) * self._size[0],
                         self._window.get_yw(coords[0][0][1]) * self._size[1],
                     ),
