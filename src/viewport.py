@@ -2,6 +2,9 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 
 from window import Window
 
+MARGIN = 20
+"""Clipping margin"""
+
 
 class Viewport:
     """The viewport in the UI where the window is displayed"""
@@ -13,8 +16,14 @@ class Viewport:
         @param viewport_canvas: The QT object to manipulate the pixmap
         """
         self._window = window
-        self._size = (viewport_canvas.width() - 2, viewport_canvas.height() - 2)
-        self._canvas = QtGui.QPixmap(self._size[0], self._size[1])
+        self._size = (
+            (viewport_canvas.width() - 2) - (2 * MARGIN),
+            (viewport_canvas.height() - 2) - (2 * MARGIN),
+        )
+        self._canvas = QtGui.QPixmap(
+            (viewport_canvas.width() - 2),
+            (viewport_canvas.height() - 2),
+        )
         self._viewport_canvas = viewport_canvas
         self._selected_colour = QtGui.QColor(246, 158, 67)
 
@@ -42,8 +51,10 @@ class Viewport:
         painter.setRenderHints(QtGui.QPainter.RenderHint.Antialiasing)
         painter.setBackground(QtGui.QColor(61, 61, 61))
         painter.setBackgroundMode(QtCore.Qt.BGMode.OpaqueMode)
-        painter.eraseRect(0, 0, self._size[0], self._size[1])
+        painter.eraseRect(self._canvas.rect())
         objects = self._window.get_visible_objects()
+
+        self.draw_clipping_area(painter)
 
         for index, obj in enumerate(objects):
             drawing_color = (
@@ -59,20 +70,27 @@ class Viewport:
                 for line in coords:
                     painter.drawLine(
                         QtCore.QPointF(
-                            self._window.get_xw(line[0][0]) * self._size[0],
-                            self._window.get_yw(line[0][1]) * self._size[1],
+                            self._window.get_xw(line[0][0]) * self._size[0] + MARGIN,
+                            self._window.get_yw(line[0][1]) * self._size[1] + MARGIN,
                         ),
                         QtCore.QPointF(
-                            self._window.get_xw(line[1][0]) * self._size[0],
-                            self._window.get_yw(line[1][1]) * self._size[1],
+                            self._window.get_xw(line[1][0]) * self._size[0] + MARGIN,
+                            self._window.get_yw(line[1][1]) * self._size[1] + MARGIN,
                         ),
                     )
             else:
                 painter.drawPoint(
                     QtCore.QPointF(
-                        self._window.get_xw(coords[0][0][0]) * self._size[0],
-                        self._window.get_yw(coords[0][0][1]) * self._size[1],
+                        self._window.get_xw(coords[0][0][0]) * self._size[0] + MARGIN,
+                        self._window.get_yw(coords[0][0][1]) * self._size[1] + MARGIN,
                     ),
                 )
         painter.end()
         self.get_viewport_canvas().setPixmap(self.get_canvas())
+
+    def draw_clipping_area(self, painter: QtGui.QPainter) -> None:
+        line_colour = QtGui.QColor(QtGui.QColor(79, 79, 79))
+        pen = QtGui.QPen(line_colour)
+        pen.setWidth(1)
+        painter.setPen(pen)
+        painter.drawRect(MARGIN, MARGIN, self._size[0], self._size[1])
