@@ -16,8 +16,17 @@ class Line(GeometricObject):
         @warn should not be called directly, use the object Factory instead
 
         @param name: A name to show in the object list
-        @param start_point: A starting Coordinate
         @param colour: A colour to draw the object
+        @param start_point: A starting Coordinate
         @param end_point: An ending Coordinate
         """
-        super(Line, self).__init__(name, "Line", colour, [(start_point, end_point)])
+        if start_point == end_point:
+            raise ValueError("Start and end points must be different")
+
+        super(Line, self).__init__(
+            name,
+            "Line",
+            colour,
+            (start_point, end_point),
+            [(start_point, end_point)],
+        )

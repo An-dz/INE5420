@@ -1,8 +1,8 @@
 from objects.geometricObject import Colour, GeometricObject, ObjectsList, VerticesList
 
 
-class Wireframe(GeometricObject):
-    """A Wireframe consists of multiple points in space"""
+class Polygon(GeometricObject):
+    """A Polygon consists of a hamiltonian graph wireframe but filled"""
     def __init__(
         self,
         name: str,
@@ -11,7 +11,7 @@ class Wireframe(GeometricObject):
         obj_types: ObjectsList,
     ) -> None:
         """
-        Creates a Wireframe object
+        Creates a Polygon object
 
         @warn should not be called directly, use the object Factory instead
 
@@ -19,7 +19,4 @@ class Wireframe(GeometricObject):
         @param colour: A colour to draw the object
         @param edges: A tuple of Coordinate tuples
         """
-        if len(obj_types) < 2:
-            raise ValueError("Wireframe requires more than 2 edges")
-
-        super(Wireframe, self).__init__(name, "Wireframe", colour, vertices, obj_types)
+        super(Polygon, self).__init__(name, "Polygon", colour, vertices, obj_types)

@@ -53,38 +53,50 @@ class Viewport:
         painter.setBackgroundMode(QtCore.Qt.BGMode.OpaqueMode)
         painter.eraseRect(self._canvas.rect())
         objects = self._window.get_visible_objects()
+        pen = QtGui.QPen()
+        pen.setWidth(2)
 
         self.draw_clipping_area(painter)
 
         for index, obj in enumerate(objects):
-            drawing_color = (
-                QtGui.QColor(*obj.get_colour()) if selected != index
-                else self._selected_colour
-            )
-            pen = QtGui.QPen(drawing_color)
-            pen.setWidth(2)
+            fill_colour = QtGui.QColor(*obj.get_colour())
+            line_colour = fill_colour if selected != index else self._selected_colour
+            pen.setColor(line_colour)
             painter.setPen(pen)
-            coords = obj.get_window_coordinates()
+            painter.setBrush(fill_colour)
+            geometric_objects = obj.get_window_coordinates()
 
-            if obj.get_type() != "Point":
-                for line in coords:
-                    painter.drawLine(
+            for vertices in geometric_objects:
+                if len(vertices) == 1:  # point
+                    painter.drawPoint(
                         QtCore.QPointF(
-                            self._window.get_xw(line[0][0]) * self._size[0] + MARGIN,
-                            self._window.get_yw(line[0][1]) * self._size[1] + MARGIN,
-                        ),
-                        QtCore.QPointF(
-                            self._window.get_xw(line[1][0]) * self._size[0] + MARGIN,
-                            self._window.get_yw(line[1][1]) * self._size[1] + MARGIN,
+                            self._window.get_xw(vertices[0][0]) * self._size[0] + MARGIN,
+                            self._window.get_yw(vertices[0][1]) * self._size[1] + MARGIN,
                         ),
                     )
-            else:
-                painter.drawPoint(
-                    QtCore.QPointF(
-                        self._window.get_xw(coords[0][0][0]) * self._size[0] + MARGIN,
-                        self._window.get_yw(coords[0][0][1]) * self._size[1] + MARGIN,
-                    ),
-                )
+                elif len(vertices) == 2:  # line
+                    painter.drawLine(
+                        QtCore.QPointF(
+                            self._window.get_xw(vertices[0][0]) * self._size[0] + MARGIN,
+                            self._window.get_yw(vertices[0][1]) * self._size[1] + MARGIN,
+                        ),
+                        QtCore.QPointF(
+                            self._window.get_xw(vertices[1][0]) * self._size[0] + MARGIN,
+                            self._window.get_yw(vertices[1][1]) * self._size[1] + MARGIN,
+                        ),
+                    )
+                else:  # polygon
+                    if selected != index:
+                        pen.setColor(line_colour.darker(150))
+
+                    painter.setPen(pen)
+                    painter.drawPolygon(QtGui.QPolygonF([
+                        QtCore.QPointF(
+                            self._window.get_xw(coord[0]) * self._size[0] + MARGIN,
+                            self._window.get_yw(coord[1]) * self._size[1] + MARGIN,
+                        ) for coord in vertices
+                    ]))
+
         painter.end()
         self.get_viewport_canvas().setPixmap(self.get_canvas())
 
