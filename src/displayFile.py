@@ -1,15 +1,17 @@
 import numpy as np
 from numpy.typing import NDArray
 
+from objects.clipping import ClippingAlgo
 from objects.geometricObject import GeometricObject
 
 
 class DisplayFile:
     """The Display File holds all objetcts in the scene"""
-    def __init__(self) -> None:
+    def __init__(self, clipping_algorithm: ClippingAlgo) -> None:
         """
         Creates the Display File
         """
+        self._clipping_algorithm = clipping_algorithm
         self._objects: list[GeometricObject] = []
         self._scn_matrix: NDArray[np.float64] = np.array(
             [[0, 0, 0], [0, 0, 0], [0, 0, 1]],
@@ -32,7 +34,7 @@ class DisplayFile:
         @param obj: The geometric object to include into the world
         """
         self._objects.append(obj)
-        obj.set_window_coordinates(self._scn_matrix)
+        obj.set_window_coordinates(self._scn_matrix, self._clipping_algorithm)
 
     def remove(self, index: int) -> None:
         """
@@ -58,4 +60,9 @@ class DisplayFile:
         """
         self._scn_matrix = matrix
         for obj in self._objects:
-            obj.set_window_coordinates(matrix)
+            obj.set_window_coordinates(matrix, self._clipping_algorithm)
+
+    def set_clipping_algorithm(self, clipping_algorithm: ClippingAlgo) -> None:
+        self._clipping_algorithm = clipping_algorithm
+        for obj in self._objects:
+            obj.set_window_coordinates(self._scn_matrix, self._clipping_algorithm)

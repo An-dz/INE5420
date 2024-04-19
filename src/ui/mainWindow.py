@@ -3,6 +3,7 @@ from PyQt6.QtCore import Qt
 
 from displayFile import DisplayFile
 from io_files.wavefront_obj import WavefrontDescriptor
+from objects.clipping import ClippingAlgo
 from objects.geometricObject import GeometricObject
 from ui.createObjectDialog import CreateObjectDialog
 from ui.generated.mainWindow import Ui_MainWindow
@@ -13,6 +14,8 @@ from window import Window
 
 
 class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
+    """Main UI window"""
+
     def __init__(self, icons: dict[str, QtGui.QIcon], *args, **kwargs) -> None:
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
@@ -56,6 +59,40 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.actionScale.setShortcut("S")
         self.actionRotate.setShortcut("R")
 
+        self._clipping_algorithm = ClippingAlgo.LiangBarsky
+        self.actionLiang_Barsky.setChecked(True)
+        self._clipping_status = QtWidgets.QLabel()
+        self._clipping_status.setText(
+            "Clipping: {}".format(self._clipping_algorithm.name),
+        )
+        self.statusbar.addPermanentWidget(self._clipping_status)
+        clipping_group = QtGui.QActionGroup(self)
+        clipping_group.addAction(self.actionPoints)
+        clipping_group.addAction(self.actionCohen_Sutherland)
+        clipping_group.addAction(self.actionLiang_Barsky)
+        clipping_group.addAction(self.actionNicholl_Lee_Nicholl)
+        self.actionNicholl_Lee_Nicholl.setVisible(False)
+        self.actionPoints.triggered.connect(
+            lambda: self.action_set_clipping_algorithm(
+                ClippingAlgo.Points,
+            ),
+        )
+        self.actionCohen_Sutherland.triggered.connect(
+            lambda: self.action_set_clipping_algorithm(
+                ClippingAlgo.CohenSutherland,
+            ),
+        )
+        self.actionLiang_Barsky.triggered.connect(
+            lambda: self.action_set_clipping_algorithm(
+                ClippingAlgo.LiangBarsky,
+            ),
+        )
+        self.actionNicholl_Lee_Nicholl.triggered.connect(
+            lambda: self.action_set_clipping_algorithm(
+                ClippingAlgo.NichollLeeNicholl,
+            ),
+        )
+
         re = QtCore.QRegularExpression("-?\\d*\\.\\d*")
         self.rotationAngleField.setValidator(QtGui.QRegularExpressionValidator(re))
 
@@ -64,7 +101,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.objectsList.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.objectsList.customContextMenuRequested.connect(self.context_menu_event)
 
-        self._display_file = DisplayFile()
+        self._display_file = DisplayFile(self._clipping_algorithm)
         self._window_obj = Window(self._display_file, (0, 0), (200, 200))
         self._viewport = Viewport(self._window_obj, self.viewportCanvas)
         self._mouse_coordinate: QtCore.QPointF | None = None
@@ -279,6 +316,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self._window_obj.rotate(0)
         self._viewport.draw(self.objectsList.currentRow())
 
+    def action_set_clipping_algorithm(
+        self,
+        clipping_algorithm: ClippingAlgo,
+    ) -> None:
+        """
+        Sets the current clipping algorithm
+
+        @paraam checked: Whether the button was checked or unchecked
+        """
+        self._clipping_algorithm = clipping_algorithm
+        self._display_file.set_clipping_algorithm(clipping_algorithm)
+        self._viewport.draw(self.objectsList.currentRow())
+        self._clipping_status.setText(
+            "Clipping: {}".format(self._clipping_algorithm.name),
+        )
+
     def action_create_object(self, obj: GeometricObject) -> None:
         """
         Adds a created object into the display file and the object list UI
@@ -322,7 +375,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         obj_index = self.objectsList.currentRow()
         if obj_index > -1 and obj_index < self.objectsList.count():
             obj = self._display_file.at(obj_index)
-            dialog = TransformDialog(geometric_obj=obj, window=self._window_obj, tab=tab)
+            dialog = TransformDialog(
+                geometric_obj=obj,
+                window=self._window_obj,
+                tab=tab,
+                clipping_algorithm=self._clipping_algorithm,
+            )
             dialog.exec()
             self._viewport.draw(self.objectsList.currentRow())
 

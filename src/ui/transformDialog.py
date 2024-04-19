@@ -4,6 +4,7 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 import numpy as np
 from numpy.typing import NDArray
 
+from objects.clipping import ClippingAlgo
 from objects.geometricObject import GeometricObject
 import transformation as transform
 from ui.generated.transformDialog import Ui_TransformDialog
@@ -22,6 +23,7 @@ class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
         self,
         geometric_obj: GeometricObject,
         window: Window,
+        clipping_algorithm: ClippingAlgo,
         tab: Tab = Tab.Translate,
         *args,
         **kwargs,
@@ -51,6 +53,7 @@ class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
         self.inputRotationPointY.setValidator(QtGui.QRegularExpressionValidator(re))
         self.tabWidgetTransformations.setCurrentIndex(tab)
 
+        self._line_clip = clipping_algorithm
         self._window = window
         self._geometric_obj = geometric_obj
         self._obj_center = self._geometric_obj.get_center()
@@ -65,10 +68,18 @@ class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
         """
         if len(self._transform_list) == 1:
             transform_matrix = self._transform_list[0]
-            self._geometric_obj.transform(transform_matrix, self._window.get_scn_matrix())
+            self._geometric_obj.transform(
+                transform_matrix,
+                self._window.get_scn_matrix(),
+                self._line_clip,
+            )
         elif len(self._transform_list) > 1:
             transform_matrix = np.linalg.multi_dot(self._transform_list)
-            self._geometric_obj.transform(transform_matrix, self._window.get_scn_matrix())
+            self._geometric_obj.transform(
+                transform_matrix,
+                self._window.get_scn_matrix(),
+                self._line_clip,
+            )
         self.close()
 
     def event_scale_aspect_changed(self, checked: int) -> None:
