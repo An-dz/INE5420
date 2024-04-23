@@ -32,3 +32,10 @@ Available shortcuts:
 - `(54,62)`
 - `(-30,-25),(-26,-79)`
 - `(-10,-10),(-10,10),(10,10),(10,-10),(-10,-10)`
+
+# Generating Python UI classes
+Example usage:
+
+```bash
+pyuic6 ui/main.ui -o src/ui/generated/main.py
+```
