@@ -1,3 +1,4 @@
+from objects.bezier_curve import BezierCurve
 from objects.geometricObject import Colour, GeometricObject, ObjectsList, VerticesList
 from objects.line import Line
 from objects.point import Point
@@ -23,6 +24,10 @@ class Factory:
         if the initial and final points are equal its a point
         """
         obj_amount = len(obj_types)
+
+        if obj_amount == 0:
+            return BezierCurve(name, colour, vertices)
+
         coord_amount = len(obj_types[0])
         if obj_amount == 1 and coord_amount == 1:
             return Point(name, colour, obj_types[0][0])
