@@ -53,6 +53,6 @@ class Ui_Dialog(object):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "About"))
         self.label.setText(_translate("Dialog", "Bländär"))
-        self.label_2.setText(_translate("Dialog", "André Zanghelini & Marcos Andrei Dranka"))
-        self.label_3.setText(_translate("Dialog", "Copyright (C) 2023"))
+        self.label_2.setText(_translate("Dialog", "André Zanghelini"))
+        self.label_3.setText(_translate("Dialog", "Copyright (C) 2023-2024"))
         self.pushButton.setText(_translate("Dialog", "Close"))

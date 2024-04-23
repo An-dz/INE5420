@@ -52,7 +52,7 @@
     <string>Bländär</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
@@ -70,10 +70,10 @@
     </font>
    </property>
    <property name="text">
-    <string>André Zanghelini &amp; Marcos Andrei Dranka</string>
+    <string>André Zanghelini</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QLabel" name="label_3">
@@ -94,7 +94,7 @@
     <string>Copyright (C) 2023</string>
    </property>
    <property name="alignment">
-    <set>Qt::AlignCenter</set>
+    <set>Qt::AlignmentFlag::AlignCenter</set>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton">
