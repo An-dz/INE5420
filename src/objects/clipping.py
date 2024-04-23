@@ -415,5 +415,3 @@ class Clipping:
             return None
 
         return np.array(clipped_polygon)
-
-# (0,0),(3,0),(3,3),(0,0)

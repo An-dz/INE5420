@@ -41,9 +41,26 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
         re = QtCore.QRegularExpression("#[0-9a-fA-F]{6}")
         self.inputColour.setValidator(QtGui.QRegularExpressionValidator(re))
         self.inputColour.textChanged.connect(self.check_colour)
+        self.checkBoxBezier.toggled.connect(
+            lambda s: self.exclusive_checkbox(self.checkboxPolygon, s),
+        )
+        self.checkboxPolygon.toggled.connect(
+            lambda s: self.exclusive_checkbox(self.checkBoxBezier, s),
+        )
         ok_button = self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok)
         if ok_button:
             ok_button.setEnabled(False)
+
+    def exclusive_checkbox(
+        self,
+        checkbox_to_disable: QtWidgets.QCheckBox,
+        state: bool,
+    ) -> None:
+        if state:
+            checkbox_to_disable.setChecked(False)
+            checkbox_to_disable.setEnabled(False)
+        else:
+            checkbox_to_disable.setEnabled(True)
 
     def check_coordinates(self, text: str) -> None:
         """
@@ -74,6 +91,20 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
                     "Polygons need at least 3 vertices and "
                     + "must start and end on the same vertex"
                 )
+
+                if len(vertices) > 3 and len(vertices) % 3 == 1:
+                    self.checkBoxBezier.setEnabled(True)
+                    self.checkBoxBezier.setToolTip(
+                        "Create a colection of Bézier curves instead of a "
+                        + "wireframe object",
+                    )
+                else:
+                    self.checkBoxBezier.setEnabled(False)
+                    self.checkBoxBezier.setChecked(False)
+                    self.checkBoxBezier.setToolTip(
+                        "Bézier curves requires a minimum of 4 points and "
+                        + "then 3 more per segment",
+                    )
 
                 self._valid_input["coords"] = True
                 ok_button.setEnabled(self._valid_input["colour"])
@@ -143,7 +174,7 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
             elif self.checkboxPolygon.isChecked():
                 vertices_normal.pop()
                 object_list = [tuple(vertices_normal)]
-            else:
+            elif not self.checkBoxBezier.isChecked():
                 vertices_iter = iter(vertices_normal)
                 last_vertex = next(vertices_iter)
                 for vertex in vertices_iter:
