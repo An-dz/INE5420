@@ -41,11 +41,19 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
         re = QtCore.QRegularExpression("#[0-9a-fA-F]{6}")
         self.inputColour.setValidator(QtGui.QRegularExpressionValidator(re))
         self.inputColour.textChanged.connect(self.check_colour)
+        self._checkboxes = [
+            self.checkBoxBezier,
+            self.checkBoxBSpline,
+            self.checkboxPolygon,
+        ]
         self.checkBoxBezier.toggled.connect(
-            lambda s: self.exclusive_checkbox(self.checkboxPolygon, s),
+            lambda s: self.exclusive_checkbox(self.checkBoxBezier, s),
+        )
+        self.checkBoxBSpline.toggled.connect(
+            lambda s: self.exclusive_checkbox(self.checkBoxBSpline, s),
         )
         self.checkboxPolygon.toggled.connect(
-            lambda s: self.exclusive_checkbox(self.checkBoxBezier, s),
+            lambda s: self.exclusive_checkbox(self.checkboxPolygon, s),
         )
         ok_button = self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok)
         if ok_button:
@@ -53,14 +61,16 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
 
     def exclusive_checkbox(
         self,
-        checkbox_to_disable: QtWidgets.QCheckBox,
+        self_checkbox: QtWidgets.QCheckBox,
         state: bool,
     ) -> None:
         if state:
-            checkbox_to_disable.setChecked(False)
-            checkbox_to_disable.setEnabled(False)
+            for checkbox in self._checkboxes:
+                if checkbox != self_checkbox:
+                    checkbox.setChecked(False)
+                    checkbox.setEnabled(False)
         else:
-            checkbox_to_disable.setEnabled(True)
+            self.check_coordinates(self.inputCoordinates.text())
 
     def check_coordinates(self, text: str) -> None:
         """
@@ -104,6 +114,19 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
                     self.checkBoxBezier.setToolTip(
                         "Bézier curves requires a minimum of 4 points and "
                         + "then 3 more per segment",
+                    )
+
+                if len(vertices) > 3:
+                    self.checkBoxBSpline.setEnabled(True)
+                    self.checkBoxBSpline.setToolTip(
+                        "Create a B-Spline curve with any amount of points instead of"
+                        + " a wireframe object",
+                    )
+                else:
+                    self.checkBoxBSpline.setEnabled(False)
+                    self.checkBoxBSpline.setChecked(False)
+                    self.checkBoxBSpline.setToolTip(
+                        "B-Spline curves requires a minimum of 4 points",
                     )
 
                 self._valid_input["coords"] = True
@@ -174,7 +197,7 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
             elif self.checkboxPolygon.isChecked():
                 vertices_normal.pop()
                 object_list = [tuple(vertices_normal)]
-            elif not self.checkBoxBezier.isChecked():
+            elif not self.checkBoxBezier.isChecked() and not self.checkBoxBSpline.isChecked():
                 vertices_iter = iter(vertices_normal)
                 last_vertex = next(vertices_iter)
                 for vertex in vertices_iter:
@@ -186,6 +209,7 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
                 colour,
                 vertices_normal,
                 object_list,
+                self.checkBoxBSpline.isChecked(),
             ))
             self.close()
         except Exception:

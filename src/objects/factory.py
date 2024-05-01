@@ -1,4 +1,5 @@
 from objects.bezier_curve import BezierCurve
+from objects.bspline_curve import BSplineCurve
 from objects.geometricObject import Colour, GeometricObject, ObjectsList, VerticesList
 from objects.line import Line
 from objects.point import Point
@@ -14,6 +15,7 @@ class Factory:
         colour: Colour,
         vertices: VerticesList,
         obj_types: ObjectsList,
+        b_spline: bool,
     ) -> GeometricObject:
         """
         Creates an appropriate geometric object according to the amount of points given
@@ -26,6 +28,9 @@ class Factory:
         obj_amount = len(obj_types)
 
         if obj_amount == 0:
+            if b_spline:
+                return BSplineCurve(name, colour, vertices)
+
             return BezierCurve(name, colour, vertices)
 
         coord_amount = len(obj_types[0])

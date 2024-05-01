@@ -57,7 +57,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,1">
+    <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="0,0,1">
      <item>
       <widget class="QCheckBox" name="checkboxPolygon">
        <property name="enabled">
@@ -75,6 +75,16 @@
        </property>
        <property name="text">
         <string>Bézier Curve</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBoxBSpline">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="text">
+        <string>B-Spline Curve</string>
        </property>
       </widget>
      </item>
