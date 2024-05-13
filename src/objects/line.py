@@ -27,6 +27,6 @@ class Line(GeometricObject):
             name,
             "Line",
             colour,
-            (start_point, end_point),
+            [start_point, end_point],
             [(start_point, end_point)],
         )

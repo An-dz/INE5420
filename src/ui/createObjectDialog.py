@@ -5,7 +5,6 @@ from PyQt6 import QtCore, QtGui, QtWidgets
 from objects.factory import Factory
 from objects.geometricObject import (
     Colour,
-    Coordinate,
     GeometricObject,
     ObjectsList,
     VerticesList,
@@ -89,7 +88,7 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
                 # input is only valid for tuples of coordinates
                 for vertex in vertices:
                     if (
-                        len(vertex) != 2 or not (
+                        len(vertex) != 3 or not (
                             isinstance(vertex[0], float) or isinstance(vertex[0], int)
                         ) or not (
                             isinstance(vertex[1], float) or isinstance(vertex[1], int)
@@ -186,7 +185,7 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
             )
 
         try:
-            vertices_tuple: tuple[Coordinate, ...] = tuple(
+            vertices_tuple: tuple[tuple[float, float, float], ...] = tuple(
                 eval(self.inputCoordinates.text() + ","),
             )
             vertices_normal: VerticesList = [(*v, 1) for v in vertices_tuple]
@@ -204,7 +203,7 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
                     object_list.append((last_vertex, vertex))
                     last_vertex = vertex
 
-            self._callback(Factory.create_object(
+            self._callback(Factory.create_object_new(
                 name,
                 colour,
                 vertices_normal,
@@ -212,5 +211,6 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
                 self.checkBoxBSpline.isChecked(),
             ))
             self.close()
-        except Exception:
+        except Exception as e:
+            print(e)
             return

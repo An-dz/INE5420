@@ -5,10 +5,10 @@ from numpy.typing import NDArray
 
 from objects.clipping import Clipping, ClippingAlgo
 
-Coordinate = tuple[float, float]
-"""Coordinate in 2D plane"""
-NormalCoordinate = tuple[float, float, Literal[1]]
-"""Coordinate in 2D plane with normalised Z"""
+Coordinate = tuple[float, float, float]
+"""Coordinate in 3D plane"""
+NormalCoordinate = tuple[float, float, float, Literal[1]]
+"""Coordinate in 3D plane with normalised W"""
 VerticesList = list[NormalCoordinate]
 """List of vertices in Normalised Coordinates"""
 ObjectsList = list[tuple[NormalCoordinate, ...]]

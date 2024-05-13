@@ -13,6 +13,8 @@ app = QtWidgets.QApplication(sys.argv)
 
 icons = {
     "Point": QtGui.QIcon(os.path.join(script_dir, "assets/point.png")),
+    "Point3D": QtGui.QIcon(os.path.join(script_dir, "assets/point.png")),
+    "Object3D": QtGui.QIcon(os.path.join(script_dir, "assets/cube.png")),
     "Line": QtGui.QIcon(os.path.join(script_dir, "assets/line.png")),
     "Wireframe": QtGui.QIcon(os.path.join(script_dir, "assets/wireframe.png")),
     "Polygon": QtGui.QIcon(os.path.join(script_dir, "assets/polygon.png")),

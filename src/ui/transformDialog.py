@@ -1,4 +1,5 @@
 from enum import IntEnum
+from typing import Literal
 
 from PyQt6 import QtCore, QtGui, QtWidgets
 import numpy as np
@@ -38,19 +39,27 @@ class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
         self.setupUi(self)
         self.checkBoxScaleAspect.stateChanged.connect(self.event_scale_aspect_changed)
         self.inputScaleSx.textChanged.connect(self.event_scale_x_changed)
-        self.radioRotateCenter.toggled.connect(self.event_rotate_center_toggled)
-        self.radioRotateOrigin.toggled.connect(self.event_rotate_origin_toggled)
-        self.radioRotatePoint.toggled.connect(self.event_rotate_point_toggled)
+        self.radioAxisX.toggled.connect(lambda s: self.event_rotate_axis_toggled("x", s))
+        self.radioAxisY.toggled.connect(lambda s: self.event_rotate_axis_toggled("y", s))
+        self.radioAxisZ.toggled.connect(lambda s: self.event_rotate_axis_toggled("z", s))
+        self.radioAxisCenter.toggled.connect(self.event_rotate_center_toggled)
+        self.radioAxisArbitrary.toggled.connect(self.event_rotate_arbitrary_toggled)
         self.buttonTransformationAdd.clicked.connect(self.event_transformation_add)
         self.buttonTransformationRemove.clicked.connect(self.event_transformation_remove)
         re = QtCore.QRegularExpression("-?\\d*(\\.\\d*)?")
         self.inputTranslateDx.setValidator(QtGui.QRegularExpressionValidator(re))
         self.inputTranslateDy.setValidator(QtGui.QRegularExpressionValidator(re))
+        self.inputTranslateDz.setValidator(QtGui.QRegularExpressionValidator(re))
         self.inputScaleSx.setValidator(QtGui.QRegularExpressionValidator(re))
         self.inputScaleSy.setValidator(QtGui.QRegularExpressionValidator(re))
+        self.inputScaleSz.setValidator(QtGui.QRegularExpressionValidator(re))
         self.inputRotationAngle.setValidator(QtGui.QRegularExpressionValidator(re))
-        self.inputRotationPointX.setValidator(QtGui.QRegularExpressionValidator(re))
-        self.inputRotationPointY.setValidator(QtGui.QRegularExpressionValidator(re))
+        self.inputRotationPointX1.setValidator(QtGui.QRegularExpressionValidator(re))
+        self.inputRotationPointY1.setValidator(QtGui.QRegularExpressionValidator(re))
+        self.inputRotationPointZ1.setValidator(QtGui.QRegularExpressionValidator(re))
+        self.inputRotationPointX2.setValidator(QtGui.QRegularExpressionValidator(re))
+        self.inputRotationPointY2.setValidator(QtGui.QRegularExpressionValidator(re))
+        self.inputRotationPointZ2.setValidator(QtGui.QRegularExpressionValidator(re))
         self.tabWidgetTransformations.setCurrentIndex(tab)
 
         self._line_clip = clipping_algorithm
@@ -59,8 +68,7 @@ class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
         self._obj_center = self._geometric_obj.get_center()
         self._transform_list: list[NDArray[np.float64]] = []
 
-        self.inputRotationPointX.setText(str(self._obj_center[0]))
-        self.inputRotationPointY.setText(str(self._obj_center[1]))
+        self.inputRotationPointX2.setText("1")
 
     def accept(self) -> None:
         """
@@ -90,9 +98,12 @@ class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
         """
         self.inputScaleSy.setEnabled(checked == 0)
         self.label_scaleSy.setEnabled(checked == 0)
+        self.inputScaleSz.setEnabled(checked == 0)
+        self.label_scaleSz.setEnabled(checked == 0)
         # if itś checked we set Y scale equal to X
         if checked > 0:
             self.inputScaleSy.setText(self.inputScaleSx.text())
+            self.inputScaleSz.setText(self.inputScaleSx.text())
 
     def event_scale_x_changed(self, text: str) -> None:
         """
@@ -103,6 +114,7 @@ class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
         # if the aspect ratio is checked we keep both X & Y equal
         if self.checkBoxScaleAspect.checkState() == QtCore.Qt.CheckState.Checked:
             self.inputScaleSy.setText(text)
+            self.inputScaleSz.setText(text)
 
     def event_rotate_center_toggled(self, state: bool) -> None:
         """
@@ -111,32 +123,69 @@ class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
         @param state: whether the radio box was selected or not
         """
         # if is's toggled on we set the origin on the object's center
+        self.inputRotationPointX2.setEnabled(state)
+        self.inputRotationPointY2.setEnabled(state)
+        self.inputRotationPointZ2.setEnabled(state)
+        self.label_PointX2.setEnabled(state)
+        self.label_PointY2.setEnabled(state)
+        self.label_PointZ2.setEnabled(state)
         if state:
-            self.inputRotationPointX.setText(str(self._obj_center[0]))
-            self.inputRotationPointY.setText(str(self._obj_center[1]))
+            self.inputRotationPointX1.setText(str(self._obj_center[0]))
+            self.inputRotationPointY1.setText(str(self._obj_center[1]))
+            self.inputRotationPointZ1.setText(str(self._obj_center[2]))
+            left_align = "QLineEdit { qproperty-cursorPosition: 0; }"
+            self.inputRotationPointX1.setStyleSheet(left_align)
+            self.inputRotationPointY1.setStyleSheet(left_align)
+            self.inputRotationPointZ1.setStyleSheet(left_align)
+            self.inputRotationPointX2.setText(None)
+            self.inputRotationPointY2.setText(None)
+            self.inputRotationPointZ2.setText(None)
 
-    def event_rotate_origin_toggled(self, state: bool) -> None:
+    def event_rotate_axis_toggled(
+        self,
+        axis: Literal["x"] | Literal["y"] | Literal["z"],
+        state: bool,
+    ) -> None:
         """
         Event fired when rotate around origin is toggled
 
         @param state: whether the radio box was selected or not
         """
-        # if is's toggled on we set the origin on 0,0
+        # if is's toggled on we set the starting point on 0,0
         if state:
-            self.inputRotationPointX.setText(None)
-            self.inputRotationPointY.setText(None)
+            self.inputRotationPointX1.setText(None)
+            self.inputRotationPointY1.setText(None)
+            self.inputRotationPointZ1.setText(None)
+            self.inputRotationPointX2.setText("1" if axis == "x" else "0")
+            self.inputRotationPointY2.setText("1" if axis == "y" else "0")
+            self.inputRotationPointZ2.setText("1" if axis == "z" else "0")
 
-    def event_rotate_point_toggled(self, state: bool) -> None:
+    def event_rotate_arbitrary_toggled(self, state: bool) -> None:
         """
-        Event fired when rotate around custom point is toggled
+        Event fired when rotate around custom axis is toggled
 
-        @param state: whether the radio box was selected or not
+        @param state: whether the radio box went to selected or not
         """
-        self.groupBoxRotationPoint.setEnabled(state)
-        # if is's toggled on we set the origin on 0,0
+        self.inputRotationPointX1.setEnabled(state)
+        self.inputRotationPointY1.setEnabled(state)
+        self.inputRotationPointZ1.setEnabled(state)
+        self.inputRotationPointX2.setEnabled(state)
+        self.inputRotationPointY2.setEnabled(state)
+        self.inputRotationPointZ2.setEnabled(state)
+        self.label_PointX1.setEnabled(state)
+        self.label_PointY1.setEnabled(state)
+        self.label_PointZ1.setEnabled(state)
+        self.label_PointX2.setEnabled(state)
+        self.label_PointY2.setEnabled(state)
+        self.label_PointZ2.setEnabled(state)
+        # if is's toggled on we set the axis to 0,0,0 - 0,0,0
         if state:
-            self.inputRotationPointX.setText(None)
-            self.inputRotationPointY.setText(None)
+            self.inputRotationPointX1.setText(None)
+            self.inputRotationPointY1.setText(None)
+            self.inputRotationPointZ1.setText(None)
+            self.inputRotationPointX2.setText(None)
+            self.inputRotationPointY2.setText(None)
+            self.inputRotationPointZ2.setText(None)
 
     def event_transformation_add(self) -> None:
         """
@@ -147,57 +196,116 @@ class TransformDialog(QtWidgets.QDialog, Ui_TransformDialog):
         if current_tab == 0:
             dx = 0.0
             dy = 0.0
+            dz = 0.0
             try:
                 dx = float(self.inputTranslateDx.text())
             except Exception:
-                return
+                pass
             try:
                 dy = float(self.inputTranslateDy.text())
             except Exception:
-                return
-            self._transform_list.append(transform.translate(dx, dy))
+                pass
+            try:
+                dz = float(self.inputTranslateDz.text())
+            except Exception:
+                pass
+            self._transform_list.append(transform.translate(dx, dy, dz))
             QtWidgets.QListWidgetItem(
-                "Translate ({}, {})".format(dx, dy),
+                "Translate ({}, {}, {})".format(dx, dy, dz),
                 self.listTransformations,
             )
         elif current_tab == 1:
             sx = 0.0
             sy = 0.0
+            sz = 0.0
             try:
                 sx = float(self.inputScaleSx.text())
             except Exception:
-                return
+                pass
             try:
                 sy = float(self.inputScaleSy.text())
             except Exception:
-                return
-            self._transform_list.append(transform.scale(self._obj_center, sx, sy))
+                pass
+            try:
+                sz = float(self.inputScaleSz.text())
+            except Exception:
+                pass
+            self._transform_list.append(transform.scale(self._obj_center, sx, sy, sz))
             QtWidgets.QListWidgetItem(
-                "Scale ({}, {})".format(sx, sy),
+                "Scale ({}, {}, {})".format(sx, sy, sz),
                 self.listTransformations,
             )
         elif current_tab == 2:
-            teta = 0.0
             try:
                 teta = float(self.inputRotationAngle.text())
             except Exception:
                 return
-            center = np.array([0, 0])
-            rotation_type = "origin"
-            if self.radioRotateCenter.isChecked():
-                rotation_type = "object"
-                center = self._obj_center
-            elif self.radioRotatePoint.isChecked():
-                try:
-                    center = np.array([
-                        float(self.inputRotationPointX.text()),
-                        float(self.inputRotationPointY.text()),
-                    ])
-                except Exception:
-                    return
-                rotation_type = "({}, {})".format(center[0], center[1])
+
+            x1 = 0.
+            y1 = 0.
+            z1 = 0.
+            x2 = 0.
+            y2 = 0.
+            z2 = 0.
+            try:
+                x1 = float(self.inputRotationPointX1.text())
+            except Exception:
+                pass
+            try:
+                y1 = float(self.inputRotationPointY1.text())
+            except Exception:
+                pass
+            try:
+                z1 = float(self.inputRotationPointZ1.text())
+            except Exception:
+                pass
+            try:
+                x2 = float(self.inputRotationPointX2.text())
+            except Exception:
+                pass
+            try:
+                y2 = float(self.inputRotationPointY2.text())
+            except Exception:
+                pass
+            try:
+                z2 = float(self.inputRotationPointZ2.text())
+            except Exception:
+                pass
+
+            axis = [(x1, y1, z1), (x2, y2, z2)]
+
+            if axis[0] == axis[1]:
+                background = "background-color: rgba(255, 0, 0, .2)"
+                self.inputRotationPointX2.setStyleSheet(background)
+                self.inputRotationPointY2.setStyleSheet(background)
+                self.inputRotationPointZ2.setStyleSheet(background)
+                error_tooltip = "Second point must not be equal to the first"
+                self.inputRotationPointX2.setToolTip(error_tooltip)
+                self.inputRotationPointY2.setToolTip(error_tooltip)
+                self.inputRotationPointZ2.setToolTip(error_tooltip)
+                return
+
+            self.inputRotationPointX2.setStyleSheet(None)
+            self.inputRotationPointY2.setStyleSheet(None)
+            self.inputRotationPointZ2.setStyleSheet(None)
+            self.inputRotationPointX2.setToolTip(None)
+            self.inputRotationPointY2.setToolTip(None)
+            self.inputRotationPointZ2.setToolTip(None)
+
+            if self.radioAxisX.isChecked():
+                rotation_type = "X Axis"
+            elif self.radioAxisY.isChecked():
+                rotation_type = "Y Axis"
+            elif self.radioAxisZ.isChecked():
+                rotation_type = "Z Axis"
+            elif self.radioAxisCenter.isChecked():
+                rotation_type = "Center-{} Axis".format(axis[1])
+            elif self.radioAxisArbitrary.isChecked():
+                rotation_type = "{} Axis".format(axis)
+            else:
+                return
             self._transform_list.append(
-                transform.rotate_around(center, np.pi * teta / 180),
+                transform.rotate_around_z(axis, np.pi * teta / 180),
             )
             QtWidgets.QListWidgetItem(
                 "Rotate {}° @ {}".format(teta, rotation_type),
