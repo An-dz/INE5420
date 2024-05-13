@@ -155,7 +155,7 @@
              <string>Move</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
            </widget>
            <widget class="QLabel" name="movementZoomLabel">
@@ -171,7 +171,7 @@
              <string>Zoom</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
            </widget>
            <widget class="QPushButton" name="movementButtonRotateAntiClockwise">
@@ -200,7 +200,7 @@
              <string>Rotate</string>
             </property>
             <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <set>Qt::AlignmentFlag::AlignCenter</set>
             </property>
            </widget>
            <widget class="QPushButton" name="movementButtonRotateClockwise">
@@ -237,7 +237,7 @@
          <item>
           <widget class="QGroupBox" name="projectionGroupBox">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="title">
             <string>Projection</string>
@@ -260,10 +260,16 @@
               <property name="text">
                <string>Parallel</string>
               </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
              </widget>
             </item>
             <item>
              <widget class="QRadioButton" name="projectionRadioPerspective">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                 <horstretch>0</horstretch>

@@ -35,7 +35,7 @@ class Clipping:
         clipped_coords: list[NDArray[np.float64]] = []
 
         for vertex in points:
-            (v_x, v_y, _) = vertex
+            (v_x, v_y, _, _) = vertex
 
             if v_x > 1 or v_x < -1 or v_y > 1 or v_y < -1:
                 continue
@@ -64,8 +64,8 @@ class Clipping:
         y1: float
 
         (vertex_0, vertex_1) = edge
-        (x0, y0, _) = vertex_0
-        (x1, y1, _) = vertex_1
+        (x0, y0, _, _) = vertex_0
+        (x1, y1, _, _) = vertex_1
         rc = [  # Top Bottom Right Left
             (
                 (y0 > 1) << 3
@@ -139,8 +139,8 @@ class Clipping:
         y1: float
 
         (vertex_0, vertex_1) = edge
-        (x0, y0, _) = vertex_0
-        (x1, y1, _) = vertex_1
+        (x0, y0, _, _) = vertex_0
+        (x1, y1, _, _) = vertex_1
         new_edge = edge.copy()
         p = [
             0,
@@ -190,18 +190,18 @@ class Clipping:
 
         @returns: New clipped edge or None if outside view
         """
-        vertex_0: NDArray[np.float64]
-        vertex_1: NDArray[np.float64]
-        x0: float
-        y0: float
-        x1: float
-        y1: float
+        # vertex_0: NDArray[np.float64]
+        # vertex_1: NDArray[np.float64]
+        # x0: float
+        # y0: float
+        # x1: float
+        # y1: float
 
         clipped_coords: list[NDArray[np.float64]] = []
 
-        (vertex_0, vertex_1) = edge
-        (x0, y0, _) = vertex_0
-        (x1, y1, _) = vertex_1
+        # (vertex_0, vertex_1) = edge
+        # (x0, y0, _, _) = vertex_0
+        # (x1, y1, _, _) = vertex_1
         new_edge = edge.copy()
 
         clipped_coords.append(new_edge)
@@ -254,9 +254,9 @@ class Clipping:
                         or (test_value == -1 and v0[test_var] > test_value)
                     ):
                         temp.append(v0)
-                        temp.append([x, y, 1])
+                        temp.append([x, y, 1, 1])
                     else:
-                        temp.append([x, y, 1])
+                        temp.append([x, y, 1, 1])
                         temp.append(v1)
                 else:
                     y = test_value
@@ -272,9 +272,9 @@ class Clipping:
                         or (test_value == -1 and v0[test_var] > test_value)
                     ):
                         temp.append(v0)
-                        temp.append([x, y, 1])
+                        temp.append([x, y, 1, 1])
                     else:
-                        temp.append([x, y, 1])
+                        temp.append([x, y, 1, 1])
                         temp.append(v1)
 
         if len(temp) == 0:
@@ -289,7 +289,12 @@ class Clipping:
                 min_x = min(min_x, x)
                 min_y = min(min_y, y)
             if max_x > 1 and min_x < -1 and max_y > 1 and min_y < -1:
-                return np.array([[-1, 1, 1], [1, 1, 1], [1, -1, 1], [-1, -1, 1]])
+                return np.array([
+                    [-1, 1, 1, 1],
+                    [1, 1, 1, 1],
+                    [1, -1, 1, 1],
+                    [-1, -1, 1, 1],
+                ])
             return None
 
         return np.array(temp)
@@ -321,7 +326,7 @@ class Clipping:
         window_v.append(np.array([1, 1, 1]))
         window_v.append(np.array([1, -1, 1]))
         window_v.append(np.array([-1, -1, 1]))
-        clipped_polygon: list[NDArray[np.float64]] = []
+        # clipped_polygon: list[NDArray[np.float64]] = []
         i = 0
         stop_at = len(polygon)
 
@@ -393,25 +398,25 @@ class Clipping:
             return None
         return polygon
 
-        vertex_id = vertex.uid()
-        clipped_polygon.append(vertex.coords())
-        vertex = vertex.next_node()
+        # vertex_id = vertex.uid()
+        # clipped_polygon.append(vertex.coords())
+        # vertex = vertex.next_node()
 
-        if vertex.is_intersection():
-            vertex = vertex.next_node()
+        # if vertex.is_intersection():
+        #     vertex = vertex.next_node()
 
-        while vertex.uid() != vertex_id:
-            clipped_polygon.append(vertex.coords())
-            vertex = vertex.next_node()
+        # while vertex.uid() != vertex_id:
+        #     clipped_polygon.append(vertex.coords())
+        #     vertex = vertex.next_node()
 
-            if vertex.is_intersection():
-                vertex = vertex.next_node()
+        #     if vertex.is_intersection():
+        #         vertex = vertex.next_node()
 
-        print("clipped_polygon")
-        for a in clipped_polygon:
-            print("\t", a)
+        # print("clipped_polygon")
+        # for a in clipped_polygon:
+        #     print("\t", a)
 
-        if len(clipped_polygon) == 0:
-            return None
+        # if len(clipped_polygon) == 0:
+        #     return None
 
-        return np.array(clipped_polygon)
+        # return np.array(clipped_polygon)

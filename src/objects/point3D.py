@@ -1,7 +1,7 @@
 from objects.geometricObject import Colour, GeometricObject, NormalCoordinate
 
 
-class Point(GeometricObject):
+class Point3D(GeometricObject):
     """A single point in space"""
     def __init__(
         self,
@@ -10,7 +10,7 @@ class Point(GeometricObject):
         coordinate: NormalCoordinate,
     ) -> None:
         """
-        Creates a Point object
+        Creates a 3D Point object
 
         @warn should not be called directly, use the object Factory instead
 
@@ -18,4 +18,6 @@ class Point(GeometricObject):
         @param colour: A colour to draw the object
         @param point: The Coordinates of the point
         """
-        super(Point, self).__init__(name, "Point", colour, [coordinate], [(coordinate,)])
+        super(Point3D, self).__init__(
+            name, "Point3D", colour, [coordinate], [(coordinate,)],
+        )
