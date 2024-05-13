@@ -42,6 +42,7 @@ class WavefrontDescriptor:
                             object_colour,
                             vertices,
                             object_types,
+                            False,
                         ))
                         object_types = []
 
@@ -49,7 +50,12 @@ class WavefrontDescriptor:
                     #               Vertex data               #
                     #-----------------------------------------#
                     if items[0] == "v":  # geometric vertices
-                        vertices.append((float(items[1]), float(items[2]), 1))
+                        vertices.append((
+                            float(items[1]),
+                            float(items[2]),
+                            float(items[3]),
+                            1,
+                        ))
                     # elif items[0] == "vt":  # texture vertices
                     # elif items[0] == "vn":  # vertex normals
                     # elif items[0] == "vp":  # parameter space vertices
@@ -135,6 +141,7 @@ class WavefrontDescriptor:
                 object_colour,
                 vertices,
                 object_types,
+                False,
             ))
 
         return objects
