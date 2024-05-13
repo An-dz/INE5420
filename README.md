@@ -22,9 +22,22 @@ Available shortcuts:
 - `N`/`G`: Open transform window on translate
 - `R`: Open transform window on rotate
 - `S`: Open transform window on scale
-- `Num6`: Rotate clockwise
-- `Num4`: Rotate anti-clockwise
-- `Num7`: Reset rotation
+- `Num6`: Yaw camera left
+- `Num4`: Yaw camera right
+- `Num8`: Pitch camera down
+- `Num2`: Pitch camera up
+- `Shift+Num6`: Roll camera clockwise
+- `Shift+Num4`: Roll camera anti-clockwise
+- `Ctrl+Num6`: Move camera left
+- `Ctrl+Num4`: Move camera right
+- `Ctrl+Num8`: Move camera up
+- `Ctrl+Num2`: Move camera down
+- `Num1`: Front ortographic view (XZ plane)
+- `Ctrl+Num1`: Back ortographic view (XZ plane)
+- `Num3`: Right ortographic view (YZ plane)
+- `Ctrl+Num3`: Left ortographic view (YZ plane)
+- `Num7`: Top ortographic view (XY plane)
+- `Ctrl+Num7`: Bottom ortographic view (XY plane)
 - `Ctrl+O`: Import Wavefront (.obj)
 - `Ctrl+S`: Export Wavefront (.obj)
 
