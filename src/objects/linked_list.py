@@ -128,7 +128,11 @@ class CircularLinkedList:
 
         while i > 0 and current:
             i -= 1
-            string += "\n\t{}, {}, {}".format(str(current.coords()), current.is_intersection(), current.next_node().coords())
+            string += "\n\t{}, {}, {}".format(
+                str(current.coords()),
+                current.is_intersection(),
+                current.next_node().coords(),
+            )
             current = current.next_node()
 
         return string + "\n]"

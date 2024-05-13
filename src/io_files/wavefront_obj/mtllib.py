@@ -65,19 +65,19 @@ class MaterialLibraryWriter:
         @param filepath: Path to save the MTL file
         """
         self._filepath = filepath
+        self._colours: dict[str, str] = {}
+        self._material_index = 0
 
     def __enter__(self) -> "MaterialLibraryWriter":
         """
         Opens the file once we enter the `with` statement and writes the header
         """
         self._file = open(self._filepath, "w")
-        self._material_index = 0
-        self._colours: dict[str, str] = {}
         self._file.write("# Bländär MTL File\n\n")
 
         return self
 
-    def __exit__(self, *args) -> Literal[False]:
+    def __exit__(self, *_) -> Literal[False]:
         """
         Closes the file once we leave the `with` statement
         """

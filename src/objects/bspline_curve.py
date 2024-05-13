@@ -89,10 +89,10 @@ class BSplineCurve(GeometricObject):
                 [-1 / 2, 0, 1 / 2, 0],
                 [1 / 6, 2 / 3, 1 / 6, 0],
             ])
-            cx: NDArray[np.float64] = np.matmul(mbs, gx)
-            cy: NDArray[np.float64] = np.matmul(mbs, gy)
-            x: NDArray[np.float64] = np.matmul(self._e, cx)
-            y: NDArray[np.float64] = np.matmul(self._e, cy)
+            cx: NDArray[np.float64] = mbs @ gx
+            cy: NDArray[np.float64] = mbs @ gy
+            x: NDArray[np.float64] = self._e @ cx
+            y: NDArray[np.float64] = self._e @ cy
             lines = self._fwd_diff_draw(
                 self._n, x[0], x[1], x[2], x[3], y[0], y[1], y[2], y[3],
             )
