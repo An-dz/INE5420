@@ -5,6 +5,8 @@ from displayFile import DisplayFile
 from io_files.wavefront_obj import WavefrontDescriptor
 from objects.clipping import ClippingAlgo
 from objects.geometricObject import GeometricObject
+from objects.line import Line
+from objects.wireframe import Wireframe
 from ui.createObjectDialog import CreateObjectDialog
 from ui.generated.mainWindow import Ui_MainWindow
 from ui.aboutDialog import AboutDialog
@@ -20,13 +22,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         super(MainWindow, self).__init__(*args, **kwargs)
         self.setupUi(self)
         # set actions
+        ## menu actions
+        self.actionAdd_Object.triggered.connect(self.action_create_objectmenu)
+        self.actionAbout.triggered.connect(self.action_about_menu)
+        self.actionQuit.triggered.connect(self.action_quit_menu)
         self.actionWavefrontImport.triggered.connect(self.action_import_obj)
         self.actionWavefrontExport.triggered.connect(self.action_export_obj)
         self.actionWavefrontImport.setShortcut("Ctrl+O")
         self.actionWavefrontExport.setShortcut("Ctrl+S")
-        self.actionAdd_Object.triggered.connect(self.action_create_objectmenu)
-        self.actionAbout.triggered.connect(self.action_about_menu)
-        self.actionQuit.triggered.connect(self.action_quit_menu)
+
+        ## movement buttons
         self.movementButtonDown.clicked.connect(self.action_move_down)
         self.movementButtonLeft.clicked.connect(self.action_move_left)
         self.movementButtonRight.clicked.connect(self.action_move_right)
@@ -37,16 +42,64 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.movementButtonRotateAntiClockwise.clicked.connect(
             self.action_rotate_anticlockwise,
         )
+
+        ## zoom shortcut
         self.keyboardZoomIn = QtGui.QShortcut(QtGui.QKeySequence("+"), self)
         self.keyboardZoomOut = QtGui.QShortcut(QtGui.QKeySequence("-"), self)
         self.keyboardZoomIn.activated.connect(self.action_zoom_in)
         self.keyboardZoomOut.activated.connect(self.action_zoom_out)
-        self.keyboardResetRotate = QtGui.QShortcut(QtGui.QKeySequence("7"), self)
-        self.keyboardRotateClock = QtGui.QShortcut(QtGui.QKeySequence("6"), self)
-        self.keyboardRotateAntiClock = QtGui.QShortcut(QtGui.QKeySequence("4"), self)
-        self.keyboardResetRotate.activated.connect(self.action_rotate_reset)
-        self.keyboardRotateClock.activated.connect(self.action_rotate_clockwise)
-        self.keyboardRotateAntiClock.activated.connect(self.action_rotate_anticlockwise)
+
+        ## rotation shortcuts
+        self.keyboardResetRotateXZF = QtGui.QShortcut(QtGui.QKeySequence("1"), self)
+        self.keyboardResetRotateYZF = QtGui.QShortcut(QtGui.QKeySequence("3"), self)
+        self.keyboardResetRotateXYF = QtGui.QShortcut(QtGui.QKeySequence("7"), self)
+        self.keyboardResetRotateXZB = QtGui.QShortcut(QtGui.QKeySequence("Ctrl+1"), self)
+        self.keyboardResetRotateYZB = QtGui.QShortcut(QtGui.QKeySequence("Ctrl+3"), self)
+        self.keyboardResetRotateXYB = QtGui.QShortcut(QtGui.QKeySequence("Ctrl+7"), self)
+        self.keyboardRotateYawLeft = QtGui.QShortcut(QtGui.QKeySequence("6"), self)
+        self.keyboardRotateYawRight = QtGui.QShortcut(QtGui.QKeySequence("4"), self)
+        self.keyboardRotatePitchUp = QtGui.QShortcut(QtGui.QKeySequence("8"), self)
+        self.keyboardRotatePitchDown = QtGui.QShortcut(QtGui.QKeySequence("2"), self)
+        self.keyboardRotateRollClockwise = QtGui.QShortcut(
+            QtGui.QKeySequence("Shift+6"), self,
+        )
+        self.keyboardRotateRollAntiClockwise = QtGui.QShortcut(
+            QtGui.QKeySequence("Shift+4"), self,
+        )
+        self.keyboardMoveRight = QtGui.QShortcut(QtGui.QKeySequence("Ctrl+6"), self)
+        self.keyboardMoveLeft = QtGui.QShortcut(QtGui.QKeySequence("Ctrl+4"), self)
+        self.keyboardMoveUp = QtGui.QShortcut(QtGui.QKeySequence("Ctrl+8"), self)
+        self.keyboardMoveDown = QtGui.QShortcut(QtGui.QKeySequence("Ctrl+2"), self)
+        self.keyboardResetRotateXZF.activated.connect(
+            lambda: self.action_rotate_reset(-90, 0),  # xz y->out
+        )
+        self.keyboardResetRotateYZF.activated.connect(
+            lambda: self.action_rotate_reset(0, 90),  # yz x->out
+        )
+        self.keyboardResetRotateXYF.activated.connect(
+            lambda: self.action_rotate_reset(0, 0),  # xy z->out
+        )
+        self.keyboardResetRotateXZB.activated.connect(
+            lambda: self.action_rotate_reset(90, 0),  # xz y->in
+        )
+        self.keyboardResetRotateYZB.activated.connect(
+            lambda: self.action_rotate_reset(0, -90),  # yz x->in
+        )
+        self.keyboardResetRotateXYB.activated.connect(
+            lambda: self.action_rotate_reset(0, 180),  # xy z->in
+        )
+        self.keyboardRotateYawLeft.activated.connect(self.action_yaw_left)
+        self.keyboardRotateYawRight.activated.connect(self.action_yaw_right)
+        self.keyboardRotatePitchUp.activated.connect(self.action_pitch_up)
+        self.keyboardRotatePitchDown.activated.connect(self.action_pitch_down)
+        self.keyboardRotateRollClockwise.activated.connect(self.action_rotate_clockwise)
+        self.keyboardRotateRollAntiClockwise.activated.connect(self.action_rotate_anticlockwise)
+        self.keyboardMoveLeft.activated.connect(self.action_move_left)
+        self.keyboardMoveRight.activated.connect(self.action_move_right)
+        self.keyboardMoveUp.activated.connect(self.action_move_up)
+        self.keyboardMoveDown.activated.connect(self.action_move_down)
+
+        ##
         self.keyboardDeleteObject = QtGui.QShortcut(QtGui.QKeySequence("Del"), self)
         self.keyboardDeleteObject.activated.connect(self.action_delete_object)
         self.actionAdd_Object.setShortcut("Shift+A")
@@ -102,7 +155,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.objectsList.customContextMenuRequested.connect(self.context_menu_event)
 
         self._display_file = DisplayFile(self._clipping_algorithm)
-        self._window_obj = Window(self._display_file, (0, 0), (200, 200))
+        self._window_obj = Window(self._display_file, (0, 0, 0), (200, 200, 0))
         self._viewport = Viewport(self._window_obj, self.viewportCanvas)
         self._mouse_coordinate: QtCore.QPointF | None = None
         self._mouse_modifiers: Qt.KeyboardModifier = Qt.KeyboardModifier.NoModifier
@@ -111,6 +164,26 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.viewportCanvas.mousePressEvent = self.mouse_press_event
         self.viewportCanvas.mouseReleaseEvent = self.mouse_release_event
 
+        self.action_create_object(Line("x", (255, 0, 0), (0, 0, 0, 1), (50, 0, 0, 1)))
+        self.action_create_object(Line("y", (0, 255, 0), (0, 0, 0, 1), (0, 50, 0, 1)))
+        self.action_create_object(Line("z", (0, 0, 255), (0, 0, 0, 1), (0, 0, 50, 1)))
+        self.action_create_object(Wireframe(
+            "obj",
+            (255, 255, 0),
+            [(0, 0, 0, 1), (50, 50, 50, 1), (50, 79.929, 0, 1)],
+            [((0, 0, 0, 1), (50, 50, 50, 1)), ((50, 50, 50, 1), (50, 79.929, 0, 1))],
+        ))
+        self.action_create_object(Wireframe(
+            "camera",
+            (255, 0, 255),
+            [(60, 60, 0, 1), (-60, -60, 0, 1), (60, -60, 0, 1), (-60, 60, 0, 1)],
+            [
+                ((60, 60, 0, 1), (60, -60, 0, 1)),
+                ((60, -60, 0, 1), (-60, -60, 0, 1)),
+                ((-60, -60, 0, 1), (-60, 60, 0, 1)),
+                ((-60, 60, 0, 1), (60, 60, 0, 1)),
+            ],
+        ))
         self._viewport.draw(-1)
 
         self.objectsList.currentRowChanged.connect(lambda row: self._viewport.draw(row))
@@ -214,20 +287,55 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         Listens to keyboard shortcuts so we can have keypad shortcuts just like in Blender
         """
         if event:
+            print(event)
             numpad_mod = event.modifiers() & Qt.KeyboardModifier.KeypadModifier
+            shift_mod = event.modifiers() & Qt.KeyboardModifier.ShiftModifier
+            ctrl_mod = event.modifiers() & Qt.KeyboardModifier.ControlModifier
+            print(numpad_mod, shift_mod, ctrl_mod)
             if numpad_mod:
                 if event.key() == Qt.Key.Key_Plus:
                     self.action_zoom_in()
                 elif event.key() == Qt.Key.Key_Minus:
                     self.action_zoom_out()
+                elif event.key() == Qt.Key.Key_1:
+                    if ctrl_mod:
+                        self.action_rotate_reset(90, 0)  # xz y->in
+                    else:
+                        self.action_rotate_reset(-90, 0)  # xz y->out
                 elif event.key() == Qt.Key.Key_2:
-                    self.action_move_down()
+                    if ctrl_mod:
+                        self.action_move_down()
+                    else:
+                        self.action_pitch_down()
+                elif event.key() == Qt.Key.Key_3:
+                    if ctrl_mod:
+                        self.action_rotate_reset(0, 90)  # yz x->out
+                    else:
+                        self.action_rotate_reset(0, -90)  # yz x->in
                 elif event.key() == Qt.Key.Key_4:
-                    self.action_move_left()
+                    if ctrl_mod:
+                        self.action_move_left()
+                    elif shift_mod:
+                        self.action_rotate_anticlockwise()
+                    else:
+                        self.action_yaw_right()
                 elif event.key() == Qt.Key.Key_6:
-                    self.action_move_right()
+                    if ctrl_mod:
+                        self.action_move_right()
+                    elif shift_mod:
+                        self.action_rotate_clockwise()
+                    else:
+                        self.action_yaw_left()
+                elif event.key() == Qt.Key.Key_7:
+                    if ctrl_mod:
+                        self.action_rotate_reset(0, 0)  # xy z->out
+                    else:
+                        self.action_rotate_reset(0, 180)  # xy z->in
                 elif event.key() == Qt.Key.Key_8:
-                    self.action_move_up()
+                    if ctrl_mod:
+                        self.action_move_up()
+                    else:
+                        self.action_pitch_up()
 
     def action_delete_object(self) -> None:
         """
@@ -291,7 +399,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         try:
             angle = float(self.rotationAngleField.text())
-            self._window_obj.rotate(angle)
+            self._window_obj.roll(angle)
             self._viewport.draw(self.objectsList.currentRow())
         except Exception:
             pass
@@ -304,16 +412,68 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         """
         try:
             angle = -float(self.rotationAngleField.text())
-            self._window_obj.rotate(angle)
+            self._window_obj.roll(angle)
             self._viewport.draw(self.objectsList.currentRow())
         except Exception:
             pass
 
-    def action_rotate_reset(self) -> None:
+    def action_yaw_left(self) -> None:
+        """
+        Yaw the camera left
+
+        @note Angle is set on the interface and is loaded on the fly
+        """
+        try:
+            angle = float(self.rotationAngleField.text())
+            self._window_obj.yaw(angle)
+            self._viewport.draw(self.objectsList.currentRow())
+        except Exception:
+            pass
+
+    def action_yaw_right(self) -> None:
+        """
+        Yaw the camera right
+
+        @note Angle is set on the interface and is loaded on the fly
+        """
+        try:
+            angle = -float(self.rotationAngleField.text())
+            self._window_obj.yaw(angle)
+            self._viewport.draw(self.objectsList.currentRow())
+        except Exception:
+            pass
+
+    def action_pitch_up(self) -> None:
+        """
+        Rotate the world clockwise
+
+        @note Angle is set on the interface and is loaded on the fly
+        """
+        # try:
+        angle = float(self.rotationAngleField.text())
+        self._window_obj.pitch(angle)
+        self._viewport.draw(self.objectsList.currentRow())
+        # except Exception:
+        #     pass
+
+    def action_pitch_down(self) -> None:
+        """
+        Rotate the world anti-clockwise
+
+        @note Angle is set on the interface and is loaded on the fly
+        """
+        try:
+            angle = -float(self.rotationAngleField.text())
+            self._window_obj.pitch(angle)
+            self._viewport.draw(self.objectsList.currentRow())
+        except Exception:
+            pass
+
+    def action_rotate_reset(self, x: float, y: float) -> None:
         """
         Resets the rotation back to Y and V being aligned
         """
-        self._window_obj.rotate(0)
+        self._window_obj.set_angles(x, y, 0)
         self._viewport.draw(self.objectsList.currentRow())
 
     def action_set_clipping_algorithm(
