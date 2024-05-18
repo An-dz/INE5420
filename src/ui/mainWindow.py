@@ -100,6 +100,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.keyboardMoveDown.activated.connect(self.action_move_down)
 
         ##
+        self.projectionRadioParallel.toggled.connect(self.action_projection_parallel)
+        self.projectionRadioPerspective.toggled.connect(self.action_projection_perspective)
+        self.keyboardProjectionToggle = QtGui.QShortcut(QtGui.QKeySequence("5"), self)
+        self.keyboardProjectionToggle.activated.connect(self.action_projection_toggle)
+
+        ##
         self.keyboardDeleteObject = QtGui.QShortcut(QtGui.QKeySequence("Del"), self)
         self.keyboardDeleteObject.activated.connect(self.action_delete_object)
         self.actionAdd_Object.setShortcut("Shift+A")
@@ -174,14 +180,38 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             [((0, 0, 0, 1), (50, 50, 50, 1)), ((50, 50, 50, 1), (50, 79.929, 0, 1))],
         ))
         self.action_create_object(Wireframe(
-            "camera",
+            "cube",
             (255, 0, 255),
-            [(60, 60, 0, 1), (-60, -60, 0, 1), (60, -60, 0, 1), (-60, 60, 0, 1)],
+            [
+                (60, 60, 0, 1), (-60, -60, 0, 1), (60, -60, 0, 1), (-60, 60, 0, 1),
+                (60, 60, 60, 1), (-60, -60, 60, 1), (60, -60, 60, 1), (-60, 60, 60, 1),
+            ],
             [
                 ((60, 60, 0, 1), (60, -60, 0, 1)),
                 ((60, -60, 0, 1), (-60, -60, 0, 1)),
                 ((-60, -60, 0, 1), (-60, 60, 0, 1)),
                 ((-60, 60, 0, 1), (60, 60, 0, 1)),
+                ((60, 60, 60, 1), (60, -60, 60, 1)),
+                ((60, -60, 60, 1), (-60, -60, 60, 1)),
+                ((-60, -60, 60, 1), (-60, 60, 60, 1)),
+                ((-60, 60, 60, 1), (60, 60, 60, 1)),
+                ((60, 60, 0, 1), (60, 60, 60, 1)),
+                ((60, -60, 0, 1), (60, -60, 60, 1)),
+                ((-60, -60, 0, 1), (-60, -60, 60, 1)),
+                ((-60, 60, 0, 1), (-60, 60, 60, 1)),
+            ],
+        ))
+        self.action_create_object(Wireframe(
+            "cube_back",
+            (0, 255, 255),
+            [
+                (60, 60, 60, 1), (-60, -60, 60, 1), (60, -60, 60, 1), (-60, 60, 60, 1),
+            ],
+            [
+                ((60, 60, 60, 1), (60, -60, 60, 1)),
+                ((60, -60, 60, 1), (-60, -60, 60, 1)),
+                ((-60, -60, 60, 1), (-60, 60, 60, 1)),
+                ((-60, 60, 60, 1), (60, 60, 60, 1)),
             ],
         ))
         self._viewport.draw(-1)
@@ -319,6 +349,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                         self.action_rotate_anticlockwise()
                     else:
                         self.action_yaw_right()
+                elif event.key() == Qt.Key.Key_5:
+                    self.action_projection_toggle()
                 elif event.key() == Qt.Key.Key_6:
                     if ctrl_mod:
                         self.action_move_right()
@@ -468,6 +500,24 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self._viewport.draw(self.objectsList.currentRow())
         except Exception:
             pass
+
+    def action_projection_parallel(self, state: bool) -> None:
+        if state:
+            self._window_obj.set_projection_parallel()
+            self._viewport.draw(self.objectsList.currentRow())
+
+    def action_projection_perspective(self, state: bool) -> None:
+        if state:
+            self._window_obj.set_projection_perspective()
+            self._viewport.draw(self.objectsList.currentRow())
+
+    def action_projection_toggle(self) -> None:
+        d = self._window_obj.get_z_clip()
+        if d == 1:
+            self._window_obj.set_projection_perspective()
+        else:
+            self._window_obj.set_projection_parallel()
+        self._viewport.draw(self.objectsList.currentRow())
 
     def action_rotate_reset(self, x: float, y: float) -> None:
         """

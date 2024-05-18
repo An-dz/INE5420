@@ -39,6 +39,7 @@ class Window:
         self._rz: float = 0.
         """Rotation around Z axis"""
         self._vpn = np.array([0, 0, 80000, 1])
+        self._d = 100
         self.update_scn_matrix()
 
     def get_visible_objects(self):
@@ -71,23 +72,35 @@ class Window:
         """
         return 1 - ((yw + 1) / 2)
 
+    def get_z_clip(self) -> float:
+        return self._d
+
     def get_scn_matrix(self) -> NDArray[np.float64]:
         """
         Generates the SCN transformation matrix for the current params
 
         @returns: SCN transformation matrix as numpy array
         """
-        return (
+        scn = (
             translate(-self._wcenter[0], -self._wcenter[1], -self._wcenter[2])
             @ rotate_matrix_x(self._rx * np.pi / 180)
             @ rotate_matrix_y(-self._ry * np.pi / 180)
             @ rotate_matrix_z(self._rz * np.pi / 180)
+            @ translate(0, 0, self._d)
             @ scale_matrix(
                 1 / (self._size[0] / 2),
                 1 / (self._size[1] / 2),
                 1,
             )
         )
+        if self._d != 1:
+            scn = scn @ np.array([
+                [1, 0, 0, 0],
+                [0, 1, 0, 0],
+                [0, 0, 1, 1 / self._d],
+                [0, 0, 0, 0],
+            ])
+        return scn
 
     def update_scn_matrix(self) -> None:
         """
@@ -96,6 +109,14 @@ class Window:
         self._display_file.set_scn_matrix(
             self.get_scn_matrix(),
         )
+
+    def set_projection_parallel(self) -> None:
+        self._d = 1
+        self.update_scn_matrix()
+
+    def set_projection_perspective(self) -> None:
+        self._d = 100
+        self.update_scn_matrix()
 
     def move(self, times_dx: float, times_dy: float) -> None:
         """
