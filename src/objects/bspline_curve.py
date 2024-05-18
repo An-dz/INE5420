@@ -50,10 +50,15 @@ class BSplineCurve(GeometricObject):
         dy: float,
         d2y: float,
         d3y: float,
+        z: float,
+        dz: float,
+        d2z: float,
+        d3z: float,
     ) -> list[NDArray[np.float64]]:
         i = 1
         x_old = x
         y_old = y
+        z_old = z
         lines: list[NDArray[np.float64]] = []
 
         while i < n:
@@ -64,9 +69,13 @@ class BSplineCurve(GeometricObject):
             y = y + dy
             dy = dy + d2y
             d2y = d2y + d3y
-            lines.append(np.array([(x_old, y_old, 1), (x, y, 1)]))
+            z = z + dz
+            dz = dz + d2z
+            d2z = d2z + d3z
+            lines.append(np.array([(x_old, y_old, z_old), (x, y, z)]))
             x_old = x
             y_old = y
+            z_old = z
 
         return lines
 
@@ -83,6 +92,7 @@ class BSplineCurve(GeometricObject):
             p1, p2, p3, p4 = win_spline[i - 4:i]
             gx: NDArray[np.float64] = np.array([p1[0], p2[0], p3[0], p4[0]])
             gy: NDArray[np.float64] = np.array([p1[1], p2[1], p3[1], p4[1]])
+            gz: NDArray[np.float64] = np.array([p1[2], p2[2], p3[2], p4[2]])
             mbs: NDArray[np.float64] = np.array([
                 [-1 / 6, 1 / 2, -1 / 2, 1 / 6],
                 [1 / 2, -1, 1 / 2, 0],
@@ -91,10 +101,15 @@ class BSplineCurve(GeometricObject):
             ])
             cx: NDArray[np.float64] = mbs @ gx
             cy: NDArray[np.float64] = mbs @ gy
+            cz: NDArray[np.float64] = mbs @ gz
             x: NDArray[np.float64] = self._e @ cx
             y: NDArray[np.float64] = self._e @ cy
+            z: NDArray[np.float64] = self._e @ cz
             lines = self._fwd_diff_draw(
-                self._n, x[0], x[1], x[2], x[3], y[0], y[1], y[2], y[3],
+                self._n,
+                x[0], x[1], x[2], x[3],
+                y[0], y[1], y[2], y[3],
+                z[0], z[1], z[2], z[3],
             )
 
         for win_coords in lines:
