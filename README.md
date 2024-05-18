@@ -32,12 +32,13 @@ Available shortcuts:
 - `Ctrl+Num4`: Move camera right
 - `Ctrl+Num8`: Move camera up
 - `Ctrl+Num2`: Move camera down
-- `Num1`: Front ortographic view (XZ plane)
-- `Ctrl+Num1`: Back ortographic view (XZ plane)
-- `Num3`: Right ortographic view (YZ plane)
-- `Ctrl+Num3`: Left ortographic view (YZ plane)
-- `Num7`: Top ortographic view (XY plane)
-- `Ctrl+Num7`: Bottom ortographic view (XY plane)
+- `Num5`: Toggle between parallel and perspective projection
+- `Num1`: Front orthographic view (XZ plane)
+- `Ctrl+Num1`: Back orthographic view (XZ plane)
+- `Num3`: Right orthographic view (YZ plane)
+- `Ctrl+Num3`: Left orthographic view (YZ plane)
+- `Num7`: Top orthographic view (XY plane)
+- `Ctrl+Num7`: Bottom orthographic view (XY plane)
 - `Ctrl+O`: Import Wavefront (.obj)
 - `Ctrl+S`: Export Wavefront (.obj)
 

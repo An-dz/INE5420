@@ -116,23 +116,31 @@ class GeometricObject(Clipping):
         self._window_coordinates = []
 
         for coords in self._coordinates:
-            win_coords = coords @ win_coords_matrix
+            win_coords = []
+
+            for c in coords:
+                normal_c = c @ win_coords_matrix
+                if normal_c[2] > 0:
+                    normal_c = normal_c / normal_c[3]
+                    win_coords.append(normal_c)
+
             vertex_count = len(win_coords)
             obj = None
+            np_win_coords = np.array(win_coords)
 
             if vertex_count == 1:  # point
-                obj = self.clip_by_point(win_coords)
+                obj = self.clip_by_point(np_win_coords)
             elif vertex_count == 2:  # edge
                 if line_clip == ClippingAlgo.Points:
-                    obj = self.clip_by_point(win_coords)
+                    obj = self.clip_by_point(np_win_coords)
                 elif line_clip == ClippingAlgo.CohenSutherland:
-                    obj = self.clip_cohen_sutherland(win_coords)
+                    obj = self.clip_cohen_sutherland(np_win_coords)
                 elif line_clip == ClippingAlgo.LiangBarsky:
-                    obj = self.clip_liang_barsky(win_coords)
+                    obj = self.clip_liang_barsky(np_win_coords)
                 elif line_clip == ClippingAlgo.NichollLeeNicholl:
-                    obj = self.clip_nicholl_lee_nicholl(win_coords)
+                    obj = self.clip_nicholl_lee_nicholl(np_win_coords)
             else:  # face
-                obj = self.clip_sutherland_hodgeman(win_coords)
+                obj = self.clip_sutherland_hodgeman(np_win_coords)
 
             if obj is not None:
                 self._window_coordinates.append(obj)
