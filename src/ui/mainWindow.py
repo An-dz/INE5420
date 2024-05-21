@@ -519,8 +519,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         d = self._window_obj.get_z_clip()
         if d == 1:
             self._window_obj.set_projection_perspective()
+            self.projectionRadioPerspective.setChecked(True)
         else:
             self._window_obj.set_projection_parallel()
+            self.projectionRadioParallel.setChecked(True)
         self._viewport.draw(self.objectsList.currentRow())
 
     def action_rotate_reset(self, x: float, y: float) -> None:
