@@ -316,58 +316,58 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             else:
                 a0.ignore()
 
-    def keyPressEvent(self, event: QtGui.QKeyEvent | None) -> None:  # noqa: N802
+    def keyPressEvent(self, a0: QtGui.QKeyEvent | None) -> None:  # noqa: N802
         """
         Listens to keyboard shortcuts so we can have keypad shortcuts just like in Blender
         """
-        if event:
-            print(event)
-            numpad_mod = event.modifiers() & Qt.KeyboardModifier.KeypadModifier
-            shift_mod = event.modifiers() & Qt.KeyboardModifier.ShiftModifier
-            ctrl_mod = event.modifiers() & Qt.KeyboardModifier.ControlModifier
+        if a0:
+            print(a0)
+            numpad_mod = a0.modifiers() & Qt.KeyboardModifier.KeypadModifier
+            shift_mod = a0.modifiers() & Qt.KeyboardModifier.ShiftModifier
+            ctrl_mod = a0.modifiers() & Qt.KeyboardModifier.ControlModifier
             print(numpad_mod, shift_mod, ctrl_mod)
             if numpad_mod:
-                if event.key() == Qt.Key.Key_Plus:
+                if a0.key() == Qt.Key.Key_Plus:
                     self.action_zoom_in()
-                elif event.key() == Qt.Key.Key_Minus:
+                elif a0.key() == Qt.Key.Key_Minus:
                     self.action_zoom_out()
-                elif event.key() == Qt.Key.Key_1:
+                elif a0.key() == Qt.Key.Key_1:
                     if ctrl_mod:
                         self.action_rotate_reset(90, 0)  # xz y->in
                     else:
                         self.action_rotate_reset(-90, 0)  # xz y->out
-                elif event.key() == Qt.Key.Key_2:
+                elif a0.key() == Qt.Key.Key_2:
                     if ctrl_mod:
                         self.action_move_down()
                     else:
                         self.action_pitch_down()
-                elif event.key() == Qt.Key.Key_3:
+                elif a0.key() == Qt.Key.Key_3:
                     if ctrl_mod:
                         self.action_rotate_reset(0, 90)  # yz x->out
                     else:
                         self.action_rotate_reset(0, -90)  # yz x->in
-                elif event.key() == Qt.Key.Key_4:
+                elif a0.key() == Qt.Key.Key_4:
                     if ctrl_mod:
                         self.action_move_left()
                     elif shift_mod:
                         self.action_rotate_anticlockwise()
                     else:
                         self.action_yaw_right()
-                elif event.key() == Qt.Key.Key_5:
+                elif a0.key() == Qt.Key.Key_5:
                     self.action_projection_toggle()
-                elif event.key() == Qt.Key.Key_6:
+                elif a0.key() == Qt.Key.Key_6:
                     if ctrl_mod:
                         self.action_move_right()
                     elif shift_mod:
                         self.action_rotate_clockwise()
                     else:
                         self.action_yaw_left()
-                elif event.key() == Qt.Key.Key_7:
+                elif a0.key() == Qt.Key.Key_7:
                     if ctrl_mod:
                         self.action_rotate_reset(0, 0)  # xy z->out
                     else:
                         self.action_rotate_reset(0, 180)  # xy z->in
-                elif event.key() == Qt.Key.Key_8:
+                elif a0.key() == Qt.Key.Key_8:
                     if ctrl_mod:
                         self.action_move_up()
                     else:
