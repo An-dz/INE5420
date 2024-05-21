@@ -367,11 +367,11 @@
    </property>
    <widget class="QMenu" name="menuObjects">
     <property name="title">
-     <string>Edit</string>
+     <string>&amp;Edit</string>
     </property>
     <widget class="QMenu" name="menuTransform">
      <property name="title">
-      <string>Transform</string>
+      <string>&amp;Transform</string>
      </property>
      <addaction name="actionTranslate"/>
      <addaction name="actionScale"/>
@@ -383,17 +383,17 @@
    </widget>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>&amp;File</string>
     </property>
     <widget class="QMenu" name="menuImport">
      <property name="title">
-      <string>Import</string>
+      <string>&amp;Import</string>
      </property>
      <addaction name="actionWavefrontImport"/>
     </widget>
     <widget class="QMenu" name="menuExport">
      <property name="title">
-      <string>Export</string>
+      <string>&amp;Export</string>
      </property>
      <addaction name="actionWavefrontExport"/>
     </widget>
@@ -404,17 +404,17 @@
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="actionAbout"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>View</string>
+     <string>&amp;View</string>
     </property>
     <widget class="QMenu" name="menuClipping">
      <property name="title">
-      <string>Clipping</string>
+      <string>&amp;Clipping</string>
      </property>
      <addaction name="actionPoints"/>
      <addaction name="actionCohen_Sutherland"/>
@@ -432,12 +432,12 @@
   <widget class="QStatusBar" name="statusbar"/>
   <action name="actionAdd_Object">
    <property name="text">
-    <string>Add Object...</string>
+    <string>&amp;Add Object...</string>
    </property>
   </action>
   <action name="actionQuit">
    <property name="text">
-    <string>Quit</string>
+    <string>&amp;Quit</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
@@ -445,32 +445,32 @@
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>About</string>
+    <string>&amp;About</string>
    </property>
   </action>
   <action name="actionTranslate">
    <property name="text">
-    <string>Translate</string>
+    <string>&amp;Translate</string>
    </property>
   </action>
   <action name="actionScale">
    <property name="text">
-    <string>Scale</string>
+    <string>&amp;Scale</string>
    </property>
   </action>
   <action name="actionRotate">
    <property name="text">
-    <string>Rotate</string>
+    <string>&amp;Rotate</string>
    </property>
   </action>
   <action name="actionWavefrontImport">
    <property name="text">
-    <string>Wavefront (.obj)</string>
+    <string>&amp;Wavefront (.obj)</string>
    </property>
   </action>
   <action name="actionWavefrontExport">
    <property name="text">
-    <string>Wavefront (.obj)</string>
+    <string>&amp;Wavefront (.obj)</string>
    </property>
   </action>
   <action name="actionLogs_Panel">
@@ -481,7 +481,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Logs Panel</string>
+    <string>&amp;Logs Panel</string>
    </property>
   </action>
   <action name="actionPoints">
@@ -489,7 +489,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Points</string>
+    <string>&amp;Points</string>
    </property>
   </action>
   <action name="actionCohen_Sutherland">
@@ -497,7 +497,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Cohen-Sutherland</string>
+    <string>&amp;Cohen-Sutherland</string>
    </property>
   </action>
   <action name="actionLiang_Barsky">
@@ -505,7 +505,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Liang-Barsky</string>
+    <string>&amp;Liang-Barsky</string>
    </property>
   </action>
   <action name="actionNicholl_Lee_Nicholl">
@@ -513,7 +513,7 @@
     <bool>true</bool>
    </property>
    <property name="text">
-    <string>Nicholl-Lee-Nicholl</string>
+    <string>&amp;Nicholl-Lee-Nicholl</string>
    </property>
   </action>
  </widget>
