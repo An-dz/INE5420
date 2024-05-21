@@ -40,15 +40,16 @@ class BezierCurve(GeometricObject):
 
         for i in range(0, len(win_bezier) - 1, 3):
             p1, p2, p3, p4 = win_bezier[i:i + 4]
-            prev_vertex = np.array((0, 0, 1))
-            points_diff = np.abs(p4 - p1)
+            prev_vertex = np.array([])
+            # points_diff = np.abs(p4[:2] - p1[:2])
             # base smoothness is the amount of lines for half screen
-            base_smoothness = 25
+            # base_smoothness = 25
             # adjust smoothness according to zoom
-            smoothness = math.ceil(points_diff.max() * base_smoothness)
+            # smoothness = math.ceil(points_diff.max() * base_smoothness)
+            smoothness = 25
 
-            for t_int in range(smoothness):
-                t = (t_int + 1) / smoothness
+            for t_int in range(smoothness + 1):
+                t = t_int / smoothness
                 v = (
                     1 - 3 * t + 3 * t ** 2 - t ** 3,
                     3 * t - 6 * t ** 2 + 3 * t ** 3,
@@ -56,7 +57,6 @@ class BezierCurve(GeometricObject):
                     t ** 3,
                 )
                 new_vertex = p1 * v[0] + p2 * v[1] + p3 * v[2] + p4 * v[3]
-                new_vertex[2] = 1
 
                 if t_int > 0:
                     lines.append(np.array([prev_vertex, new_vertex]))
