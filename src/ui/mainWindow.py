@@ -93,7 +93,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.keyboardRotatePitchUp.activated.connect(self.action_pitch_up)
         self.keyboardRotatePitchDown.activated.connect(self.action_pitch_down)
         self.keyboardRotateRollClockwise.activated.connect(self.action_rotate_clockwise)
-        self.keyboardRotateRollAntiClockwise.activated.connect(self.action_rotate_anticlockwise)
+        self.keyboardRotateRollAntiClockwise.activated.connect(
+            self.action_rotate_anticlockwise,
+        )
         self.keyboardMoveLeft.activated.connect(self.action_move_left)
         self.keyboardMoveRight.activated.connect(self.action_move_right)
         self.keyboardMoveUp.activated.connect(self.action_move_up)
@@ -101,7 +103,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         ##
         self.projectionRadioParallel.toggled.connect(self.action_projection_parallel)
-        self.projectionRadioPerspective.toggled.connect(self.action_projection_perspective)
+        self.projectionRadioPerspective.toggled.connect(
+            self.action_projection_perspective,
+        )
         self.keyboardProjectionToggle = QtGui.QShortcut(QtGui.QKeySequence("5"), self)
         self.keyboardProjectionToggle.activated.connect(self.action_projection_toggle)
 
@@ -481,12 +485,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         @note Angle is set on the interface and is loaded on the fly
         """
-        # try:
-        angle = float(self.rotationAngleField.text())
-        self._window_obj.pitch(angle)
-        self._viewport.draw(self.objectsList.currentRow())
-        # except Exception:
-        #     pass
+        try:
+            angle = float(self.rotationAngleField.text())
+            self._window_obj.pitch(angle)
+            self._viewport.draw(self.objectsList.currentRow())
+        except Exception:
+            pass
 
     def action_pitch_down(self) -> None:
         """
