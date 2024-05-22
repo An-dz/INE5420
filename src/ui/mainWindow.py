@@ -3,6 +3,7 @@ from PyQt6.QtCore import Qt
 
 from displayFile import DisplayFile
 from io_files.wavefront_obj import WavefrontDescriptor
+from objects.bezier_surface import BezierSurface
 from objects.clipping import ClippingAlgo
 from objects.geometricObject import GeometricObject
 from objects.line import Line
@@ -174,50 +175,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.viewportCanvas.mousePressEvent = self.mouse_press_event
         self.viewportCanvas.mouseReleaseEvent = self.mouse_release_event
 
-        self.action_create_object(Line("x", (255, 0, 0), (0, 0, 0, 1), (50, 0, 0, 1)))
-        self.action_create_object(Line("y", (0, 255, 0), (0, 0, 0, 1), (0, 50, 0, 1)))
-        self.action_create_object(Line("z", (0, 0, 255), (0, 0, 0, 1), (0, 0, 50, 1)))
-        self.action_create_object(Wireframe(
-            "obj",
-            (255, 255, 0),
-            [(0, 0, 0, 1), (50, 50, 50, 1), (50, 79.929, 0, 1)],
-            [((0, 0, 0, 1), (50, 50, 50, 1)), ((50, 50, 50, 1), (50, 79.929, 0, 1))],
-        ))
-        self.action_create_object(Wireframe(
-            "cube",
-            (255, 0, 255),
-            [
-                (60, 60, 0, 1), (-60, -60, 0, 1), (60, -60, 0, 1), (-60, 60, 0, 1),
-                (60, 60, 60, 1), (-60, -60, 60, 1), (60, -60, 60, 1), (-60, 60, 60, 1),
-            ],
-            [
-                ((60, 60, 0, 1), (60, -60, 0, 1)),
-                ((60, -60, 0, 1), (-60, -60, 0, 1)),
-                ((-60, -60, 0, 1), (-60, 60, 0, 1)),
-                ((-60, 60, 0, 1), (60, 60, 0, 1)),
-                ((60, 60, 60, 1), (60, -60, 60, 1)),
-                ((60, -60, 60, 1), (-60, -60, 60, 1)),
-                ((-60, -60, 60, 1), (-60, 60, 60, 1)),
-                ((-60, 60, 60, 1), (60, 60, 60, 1)),
-                ((60, 60, 0, 1), (60, 60, 60, 1)),
-                ((60, -60, 0, 1), (60, -60, 60, 1)),
-                ((-60, -60, 0, 1), (-60, -60, 60, 1)),
-                ((-60, 60, 0, 1), (-60, 60, 60, 1)),
-            ],
-        ))
-        self.action_create_object(Wireframe(
-            "cube_back",
-            (0, 255, 255),
-            [
-                (60, 60, 60, 1), (-60, -60, 60, 1), (60, -60, 60, 1), (-60, 60, 60, 1),
-            ],
-            [
-                ((60, 60, 60, 1), (60, -60, 60, 1)),
-                ((60, -60, 60, 1), (-60, -60, 60, 1)),
-                ((-60, -60, 60, 1), (-60, 60, 60, 1)),
-                ((-60, 60, 60, 1), (60, 60, 60, 1)),
-            ],
-        ))
+        self.action_create_object(Line("X", (255, 0, 0), (0, 0, 0, 1), (50, 0, 0, 1)))
+        self.action_create_object(Line("Y", (0, 255, 0), (0, 0, 0, 1), (0, 50, 0, 1)))
+        self.action_create_object(Line("Z", (0, 0, 255), (0, 0, 0, 1), (0, 0, 50, 1)))
+        self.action_create_object(BezierSurface("Example Bezier", (255, 255, 0), [
+            (-10, 30, 10, 1), (00, 30, 10, 1), (10, 30, 10, 1), (20, 30, 10, 1),
+            (-10, 30, 20, 1), (00, -20, 20, 1), (10, -20, 20, 1), (20, 30, 20, 1),
+            (-10, 30, 30, 1), (00, -20, 30, 1), (10, -20, 30, 1), (20, 30, 30, 1),
+            (-10, 30, 40, 1), (00, 30, 40, 1), (10, 30, 40, 1), (20, 30, 40, 1),
+        ]))
         self._viewport.draw(-1)
 
         self.objectsList.currentRowChanged.connect(lambda row: self._viewport.draw(row))

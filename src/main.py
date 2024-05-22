@@ -20,6 +20,7 @@ icons = {
     "Polygon": QtGui.QIcon(os.path.join(script_dir, "assets/polygon.png")),
     "BezierCurve": QtGui.QIcon(os.path.join(script_dir, "assets/beziercurve.png")),
     "BSplineCurve": QtGui.QIcon(os.path.join(script_dir, "assets/bsplinecurve.png")),
+    "BezierSurface": QtGui.QIcon(os.path.join(script_dir, "assets/beziersurface.png")),
 }
 
 window = MainWindow(icons)
