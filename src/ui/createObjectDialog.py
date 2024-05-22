@@ -1,7 +1,8 @@
-from typing import Callable
+from typing import Any, Callable
 
 from PyQt6 import QtCore, QtGui, QtWidgets
 
+from objects.bezier_surface import BezierSurface
 from objects.factory import Factory
 from objects.geometricObject import (
     Colour,
@@ -33,8 +34,25 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
             "coords": False,
             "colour": True,
         }
+        self._error_msgs = {
+            "polygon": "Polygons need at least 3 vertices and must start and end on the "
+            + "same vertex",
+            "bezier_curve": "Bézier curves requires a minimum of 4 points and then 3 "
+            + "more per segment",
+            "bspline_curve": "B-Spline curves requires a minimum of 4 points",
+            "bezier_surface": "Bézier surfaces require a 4x4 matriz of points, separate "
+            + "lines of the matrix with semicolon (;)",
+            "bspline_surface": "Not implemented yet",
+            "bad_coords": "Coordinates are not in the expected format",
+            "bad_colour": "Colour is not in the expected format",
+        }
+        self.checkboxPolygon.setToolTip(self._error_msgs["polygon"])
+        self.checkBoxBezier.setToolTip(self._error_msgs["bezier_curve"])
+        self.checkBoxBSpline.setToolTip(self._error_msgs["bspline_curve"])
+        self.checkBoxBezierSurface.setToolTip(self._error_msgs["bezier_surface"])
+        self.checkBoxBSplineSurface.setToolTip(self._error_msgs["bspline_surface"])
 
-        re = QtCore.QRegularExpression("[0-9(),. -]+")
+        re = QtCore.QRegularExpression("[0-9(),. ;-]+")
         self.inputCoordinates.setValidator(QtGui.QRegularExpressionValidator(re))
         self.inputCoordinates.textChanged.connect(self.check_coordinates)
         re = QtCore.QRegularExpression("#[0-9a-fA-F]{6}")
@@ -71,6 +89,22 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
         else:
             self.check_coordinates(self.inputCoordinates.text())
 
+    def check_vertices(self, vertices: tuple[Any, ...]) -> None:
+        """
+        Input is only valid for tuples of coordinates
+        """
+        for vertex in vertices:
+            if (
+                len(vertex) != 3 or not (
+                    isinstance(vertex[0], float) or isinstance(vertex[0], int)
+                ) or not (
+                    isinstance(vertex[1], float) or isinstance(vertex[1], int)
+                ) or not (
+                    isinstance(vertex[2], float) or isinstance(vertex[2], int)
+                )
+            ):
+                raise
+
     def check_coordinates(self, text: str) -> None:
         """
         Validate input for the coordinates input
@@ -80,26 +114,36 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
         ok_button = self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok)
 
         if ok_button:
-            error_msg = "Coordinates are not in the expected format"
-
             try:
-                vertices: tuple = tuple(eval(text + ","))
+                vertices_matrix = text.split(";")
+                vertices: tuple[Any, ...] = ()
+                bezier_surface = False
 
-                # input is only valid for tuples of coordinates
-                for vertex in vertices:
-                    if (
-                        len(vertex) != 3 or not (
-                            isinstance(vertex[0], float) or isinstance(vertex[0], int)
-                        ) or not (
-                            isinstance(vertex[1], float) or isinstance(vertex[1], int)
-                        )
-                    ):
-                        raise
+                if len(vertices_matrix) == 1:
+                    vertices = tuple(eval(text + ","))
+                    self.check_vertices(vertices)
+                elif len(vertices_matrix) == 4:
+                    for vertices_line_text in vertices_matrix:
+                        vertices_line = tuple(eval(vertices_line_text + ","))
+                        self.check_vertices(vertices_line)
 
-                error_msg = (
-                    "Polygons need at least 3 vertices and "
-                    + "must start and end on the same vertex"
-                )
+                        if len(vertices_line) != 4:
+                            break
+
+                    bezier_surface = True
+
+                if bezier_surface:
+                    self.checkBoxBezierSurface.setChecked(True)
+                    self.checkBoxBezierSurface.setEnabled(True)
+                    self.checkBoxBezierSurface.setToolTip(
+                        "Create a Bézier Surface with 16 control points",
+                    )
+                else:
+                    self.checkBoxBezierSurface.setChecked(False)
+                    self.checkBoxBezierSurface.setEnabled(False)
+                    self.checkBoxBezierSurface.setToolTip(
+                        self._error_msgs["bezier_surface"],
+                    )
 
                 if len(vertices) > 3 and len(vertices) % 3 == 1:
                     self.checkBoxBezier.setEnabled(True)
@@ -110,10 +154,7 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
                 else:
                     self.checkBoxBezier.setEnabled(False)
                     self.checkBoxBezier.setChecked(False)
-                    self.checkBoxBezier.setToolTip(
-                        "Bézier curves requires a minimum of 4 points and "
-                        + "then 3 more per segment",
-                    )
+                    self.checkBoxBezier.setToolTip(self._error_msgs["bezier_curve"])
 
                 if len(vertices) > 3:
                     self.checkBoxBSpline.setEnabled(True)
@@ -124,27 +165,28 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
                 else:
                     self.checkBoxBSpline.setEnabled(False)
                     self.checkBoxBSpline.setChecked(False)
-                    self.checkBoxBSpline.setToolTip(
-                        "B-Spline curves requires a minimum of 4 points",
-                    )
+                    self.checkBoxBSpline.setToolTip(self._error_msgs["bspline_curve"])
 
                 self._valid_input["coords"] = True
                 ok_button.setEnabled(self._valid_input["colour"])
-                if len(vertices) > 3 and vertices[0] == vertices[-1]:
+                ok_button.setToolTip(
+                    self._error_msgs["bad_colour"] if self._valid_input["colour"]
+                    else None,
+                )
+                if len(vertices) > 2 and vertices[0] == vertices[-1]:
                     self.checkboxPolygon.setEnabled(True)
                     self.checkboxPolygon.setToolTip(
-                        "Create the object as polygon that is filled instead "
+                        "Create the object as a polygon that is filled instead "
                         + "of a wireframe object that only draws edges",
                     )
-                    return
+                else:
+                    self.checkboxPolygon.setChecked(False)
+                    self.checkboxPolygon.setEnabled(False)
+                    self.checkboxPolygon.setToolTip(self._error_msgs["polygon"])
             except Exception:
-                error_msg = "Coordinates are not in the expected format"
                 self._valid_input["coords"] = False
                 ok_button.setEnabled(False)
-
-            self.checkboxPolygon.setChecked(False)
-            self.checkboxPolygon.setEnabled(False)
-            self.checkboxPolygon.setToolTip(error_msg)
+                ok_button.setToolTip(self._error_msgs["bad_coords"])
 
     def check_colour(self, text: str) -> None:
         """
@@ -158,10 +200,15 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
             if len(text) == 0 or len(text) == 4 or len(text) == 7:
                 self._valid_input["colour"] = True
                 ok_button.setEnabled(self._valid_input["coords"])
+                ok_button.setToolTip(
+                    self._error_msgs["bad_coords"] if self._valid_input["coords"]
+                    else None,
+                )
                 return
 
             self._valid_input["colour"] = False
             ok_button.setEnabled(False)
+            ok_button.setToolTip(self._error_msgs["bad_colour"])
 
     def accept(self) -> None:
         """
@@ -185,8 +232,24 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
             )
 
         try:
+            text = self.inputCoordinates.text()
+            vertices_matrix = text.split(";")
+
+            if len(vertices_matrix) > 1:
+                vertices_tuples: list[tuple[tuple[float, float, float], ...]] = [
+                    eval(vertices_str) for vertices_str in vertices_matrix
+                ]
+                vertices: VerticesList = []
+
+                for t in vertices_tuples:
+                    for v in t:
+                        vertices.append((*v, 1))
+
+                self._callback(BezierSurface(name, colour, vertices))
+                return
+
             vertices_tuple: tuple[tuple[float, float, float], ...] = tuple(
-                eval(self.inputCoordinates.text() + ","),
+                eval(text + ","),
             )
             vertices_normal: VerticesList = [(*v, 1) for v in vertices_tuple]
             object_list: ObjectsList = []
@@ -196,7 +259,10 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
             elif self.checkboxPolygon.isChecked():
                 vertices_normal.pop()
                 object_list = [tuple(vertices_normal)]
-            elif not self.checkBoxBezier.isChecked() and not self.checkBoxBSpline.isChecked():
+            elif (
+                not self.checkBoxBezier.isChecked()
+                and not self.checkBoxBSpline.isChecked()
+            ):
                 vertices_iter = iter(vertices_normal)
                 last_vertex = next(vertices_iter)
                 for vertex in vertices_iter:
