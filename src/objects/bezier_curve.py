@@ -63,7 +63,10 @@ class BezierCurve(GeometricObject):
 
                 prev_vertex = new_vertex
 
-        for win_coords in lines:
+        np_lines = np.array(lines)
+        np_lines = np_lines / np_lines[:, :, -1:]
+
+        for win_coords in np_lines:
             obj = None
 
             if line_clip == ClippingAlgo.Points:
