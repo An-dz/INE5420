@@ -1,13 +1,13 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtCore import Qt
+import numpy as np
 
 from displayFile import DisplayFile
 from io_files.wavefront_obj import WavefrontDescriptor
-from objects.bezier_surface import BezierSurface
+from objects.bspline_surface import BSplineSurface
 from objects.clipping import ClippingAlgo
 from objects.geometricObject import GeometricObject
 from objects.line import Line
-from objects.wireframe import Wireframe
 from ui.createObjectDialog import CreateObjectDialog
 from ui.generated.mainWindow import Ui_MainWindow
 from ui.aboutDialog import AboutDialog
@@ -178,12 +178,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.action_create_object(Line("X", (255, 0, 0), (0, 0, 0, 1), (50, 0, 0, 1)))
         self.action_create_object(Line("Y", (0, 255, 0), (0, 0, 0, 1), (0, 50, 0, 1)))
         self.action_create_object(Line("Z", (0, 0, 255), (0, 0, 0, 1), (0, 0, 50, 1)))
-        self.action_create_object(BezierSurface("Example Bezier", (255, 255, 0), [
-            (-10, 30, 10, 1), (00, 30, 10, 1), (10, 30, 10, 1), (20, 30, 10, 1),
-            (-10, 30, 20, 1), (00, -20, 20, 1), (10, -20, 20, 1), (20, 30, 20, 1),
-            (-10, 30, 30, 1), (00, -20, 30, 1), (10, -20, 30, 1), (20, 30, 30, 1),
-            (-10, 30, 40, 1), (00, 30, 40, 1), (10, 30, 40, 1), (20, 30, 40, 1),
-        ]))
+        self.action_create_object(BSplineSurface(
+            "Example",
+            (255, 255, 0),
+            np.array([
+                [(-10, 30, 10, 1), (00, 30, 10, 1), (10, 30, 10, 1), (20, 30, 10, 1)],
+                [(-10, 30, 20, 1), (00, -20, 20, 1), (10, -20, 20, 1), (20, 30, 20, 1)],
+                [(-10, 30, 30, 1), (00, -20, 30, 1), (10, -20, 30, 1), (20, 30, 30, 1)],
+                [(-10, 30, 40, 1), (00, 30, 40, 1), (10, 30, 40, 1), (20, 30, 40, 1)],
+                [(-10, 30, 30, 1), (00, -20, 30, 1), (10, -20, 30, 1), (20, 30, 30, 1)],
+            ]),
+        ))
         self._viewport.draw(-1)
 
         self.objectsList.currentRowChanged.connect(lambda row: self._viewport.draw(row))
