@@ -19,6 +19,7 @@ class BSplineCurve(GeometricObject):
             raise ValueError(
                 "B-Spline curves requires a minimum of 4 points",
             )
+
         d = 0.01
         self._n = int(1 / d)
         self._e = self._e_array(d)
@@ -31,7 +32,8 @@ class BSplineCurve(GeometricObject):
             [curve_points],
         )
 
-    def _e_array(self, d: float) -> NDArray[np.float64]:
+    @staticmethod
+    def _e_array(d: float) -> NDArray[np.float64]:
         return np.array([
             [0, 0, 0, 1],
             [d ** 3, d ** 2, d, 0],
@@ -39,9 +41,10 @@ class BSplineCurve(GeometricObject):
             [6 * d ** 3, 0, 0, 0],
         ])
 
+    @staticmethod
     def _fwd_diff_draw(
-        self,
         n: int,
+        lines: list[NDArray[np.float64]],
         x: float,
         dx: float,
         d2x: float,
@@ -54,12 +57,16 @@ class BSplineCurve(GeometricObject):
         dz: float,
         d2z: float,
         d3z: float,
-    ) -> list[NDArray[np.float64]]:
-        i = 1
+        w: float,
+        dw: float,
+        d2w: float,
+        d3w: float,
+    ) -> None:
+        i = 0
         x_old = x
         y_old = y
         z_old = z
-        lines: list[NDArray[np.float64]] = []
+        w_old = w
 
         while i < n:
             i += 1
@@ -72,12 +79,14 @@ class BSplineCurve(GeometricObject):
             z = z + dz
             dz = dz + d2z
             d2z = d2z + d3z
-            lines.append(np.array([(x_old, y_old, z_old), (x, y, z)]))
+            w = w + dw
+            dw = dw + d2w
+            d2w = d2w + d3w
+            lines.append(np.array([(x_old, y_old, z_old, w_old), (x, y, z, w)]))
             x_old = x
             y_old = y
             z_old = z
-
-        return lines
+            w_old = w
 
     def set_window_coordinates(
         self,
@@ -93,6 +102,7 @@ class BSplineCurve(GeometricObject):
             gx: NDArray[np.float64] = np.array([p1[0], p2[0], p3[0], p4[0]])
             gy: NDArray[np.float64] = np.array([p1[1], p2[1], p3[1], p4[1]])
             gz: NDArray[np.float64] = np.array([p1[2], p2[2], p3[2], p4[2]])
+            gw: NDArray[np.float64] = np.array([p1[3], p2[3], p3[3], p4[3]])
             mbs: NDArray[np.float64] = np.array([
                 [-1 / 6, 1 / 2, -1 / 2, 1 / 6],
                 [1 / 2, -1, 1 / 2, 0],
@@ -102,17 +112,23 @@ class BSplineCurve(GeometricObject):
             cx: NDArray[np.float64] = mbs @ gx
             cy: NDArray[np.float64] = mbs @ gy
             cz: NDArray[np.float64] = mbs @ gz
+            cw: NDArray[np.float64] = mbs @ gw
             x: NDArray[np.float64] = self._e @ cx
             y: NDArray[np.float64] = self._e @ cy
             z: NDArray[np.float64] = self._e @ cz
-            lines = self._fwd_diff_draw(
-                self._n,
+            w: NDArray[np.float64] = self._e @ cw
+            self._fwd_diff_draw(
+                self._n, lines,
                 x[0], x[1], x[2], x[3],
                 y[0], y[1], y[2], y[3],
                 z[0], z[1], z[2], z[3],
+                w[0], w[1], w[2], w[3],
             )
 
-        for win_coords in lines:
+        np_lines = np.array(lines)
+        np_lines = np_lines / np_lines[:, :, -1:]
+
+        for win_coords in np_lines:
             obj = None
 
             if line_clip == ClippingAlgo.Points:
