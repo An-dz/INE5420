@@ -26,7 +26,7 @@ class BezierSurface(GeometricObject):
             "BezierSurface",
             colour,
             curve_points,
-            [curve_points],
+            [],
         )
 
     def bezier_line(
@@ -104,3 +104,26 @@ class BezierSurface(GeometricObject):
 
             if obj is not None:
                 self._window_coordinates.append(obj)
+
+    def get_coordinates(self) -> list[NDArray[np.float64]]:
+        """
+        Returns the global coordinates of each point of the object
+
+        @returns: Tuple of global coordinates for each point
+        """
+        return [self._points]
+
+    def transform(
+        self,
+        transform_matrix: NDArray[np.float64],
+        window_matrix: NDArray[np.float64],
+        line_clip: ClippingAlgo,
+    ) -> None:
+        """
+        Transform the object throught a tranformation matrix
+
+        @param transform_matrix: Transformation Matrix to apply on the obejct
+        """
+        self._points = self._points @ transform_matrix
+        self._center = self._center @ transform_matrix
+        self.set_window_coordinates(window_matrix, line_clip)
