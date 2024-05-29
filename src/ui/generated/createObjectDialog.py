@@ -88,7 +88,7 @@ class Ui_CreateObjectDialog(object):
         CreateObjectDialog.setWindowTitle(_translate("CreateObjectDialog", "Create Object"))
         self.label_name.setText(_translate("CreateObjectDialog", "Name"))
         self.label_coords.setText(_translate("CreateObjectDialog", "Coordinates"))
-        self.inputCoordinates.setPlaceholderText(_translate("CreateObjectDialog", "(x1,y1),(x2,y2),..."))
+        self.inputCoordinates.setPlaceholderText(_translate("CreateObjectDialog", "(x1,y1,z1),(x2,y2,z2),...;(xn,yn,zn),...;(xm,ym,zm),..."))
         self.checkBoxBSpline.setText(_translate("CreateObjectDialog", "B-Spline Curve"))
         self.checkBoxBezier.setText(_translate("CreateObjectDialog", "Bézier Curve"))
         self.checkboxPolygon.setText(_translate("CreateObjectDialog", "Fill Polygon"))

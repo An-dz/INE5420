@@ -1,8 +1,10 @@
 from typing import Any, Callable
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+import numpy as np
 
 from objects.bezier_surface import BezierSurface
+from objects.bspline_surface import BSplineSurface
 from objects.factory import Factory
 from objects.geometricObject import (
     Colour,
@@ -42,7 +44,8 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
             "bspline_curve": "B-Spline curves requires a minimum of 4 points",
             "bezier_surface": "Bézier surfaces require a 4x4 matriz of points, separate "
             + "lines of the matrix with semicolon (;)",
-            "bspline_surface": "Not implemented yet",
+            "bspline_surface": "B-Spline surfaces require a minimum 4x4 matriz of points,"
+            + " up to 20x20, separate lines of the matrix with semicolon (;)",
             "bad_coords": "Coordinates are not in the expected format",
             "bad_colour": "Colour is not in the expected format",
         }
@@ -118,19 +121,27 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
                 vertices_matrix = text.split(";")
                 vertices: tuple[Any, ...] = ()
                 bezier_surface = False
+                bspline_surface = False
 
                 if len(vertices_matrix) == 1:
                     vertices = tuple(eval(text + ","))
                     self.check_vertices(vertices)
-                elif len(vertices_matrix) == 4:
+                elif len(vertices_matrix) > 3:
+                    bezier_surface = len(vertices_matrix) == 4
+                    bspline_surface = True
+                    vertices_count: int | None = None
+
                     for vertices_line_text in vertices_matrix:
                         vertices_line = tuple(eval(vertices_line_text + ","))
                         self.check_vertices(vertices_line)
 
-                        if len(vertices_line) != 4:
-                            break
+                        if vertices_count and vertices_count != len(vertices_line):
+                            bspline_surface = False
 
-                    bezier_surface = True
+                        if len(vertices_line) != 4:
+                            bezier_surface = False
+
+                        vertices_count = len(vertices_line)
 
                 if bezier_surface:
                     self.checkBoxBezierSurface.setChecked(True)
@@ -143,6 +154,19 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
                     self.checkBoxBezierSurface.setEnabled(False)
                     self.checkBoxBezierSurface.setToolTip(
                         self._error_msgs["bezier_surface"],
+                    )
+
+                if bspline_surface:
+                    self.checkBoxBSplineSurface.setChecked(True)
+                    self.checkBoxBSplineSurface.setEnabled(True)
+                    self.checkBoxBSplineSurface.setToolTip(
+                        "Create a B-Spline Surface with multiple control points",
+                    )
+                else:
+                    self.checkBoxBSplineSurface.setChecked(False)
+                    self.checkBoxBSplineSurface.setEnabled(False)
+                    self.checkBoxBSplineSurface.setToolTip(
+                        self._error_msgs["bspline_surface"],
                     )
 
                 if len(vertices) > 3 and len(vertices) % 3 == 1:
@@ -241,11 +265,20 @@ class CreateObjectDialog(QtWidgets.QDialog, Ui_CreateObjectDialog):
                 ]
                 vertices: VerticesList = []
 
-                for t in vertices_tuples:
-                    for v in t:
-                        vertices.append((*v, 1))
+                if self.checkBoxBezierSurface.isChecked():
+                    for vertices_list in vertices_tuples:
+                        for v in vertices_list:
+                            vertices.append((*v, 1))
 
-                self._callback(BezierSurface(name, colour, vertices))
+                    self._callback(BezierSurface(name, colour, vertices))
+                elif self.checkBoxBSplineSurface.isChecked():
+                    matrix = np.array(
+                        [
+                            [(*v, 1) for v in vertices_list]
+                            for vertices_list in vertices_tuples
+                        ],
+                    )
+                    self._callback(BSplineSurface(name, colour, matrix))
                 return
 
             vertices_tuple: tuple[tuple[float, float, float], ...] = tuple(
